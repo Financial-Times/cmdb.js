@@ -5,10 +5,12 @@ A javascript library for interacting with the CMDB
 * Currently only written for usage server-side (using node.js)
 * Examples (and possibly implementation) biased toward express apps.
 
+Pull requests welcomed.
+
 ## Usage
 
 ### Inital Setup
-Pass in your apikey to the library to authenticate requests
+Pass in your apikey to the library to authenticate requests:
 ```
 var CMDBclass = require("cmdb.js");
 var cmdb = new CMDBclass({
@@ -16,7 +18,7 @@ var cmdb = new CMDBclass({
 });
 ```
 
-If you're playing with test or development data, you should point the library to a test environment:
+If you're playing with test or development data, you should point the library to a test environment, to avoid corrupting production:
 ```
 var CMDBclass = require("cmdb.js");
 var cmdb = new CMDBclass({
@@ -26,7 +28,7 @@ var cmdb = new CMDBclass({
 ```
 
 ### Getting information about a system
-Once you've setup the class with an apikey, you can get information about a given system by passing in the type 'system' and relevant systemCode into `getItem`:
+Once you've setup the class with an apikey, you can get information about a given system by passing in the type 'system' and relevant system code into `getItem`:
 ```
 var systemCode = 'ft-dashing';
 cmdb.getItem(null, 'system', systemCode).then(function (result) {
@@ -38,7 +40,7 @@ cmdb.getItem(null, 'system', systemCode).then(function (result) {
 You can also create/update and delete items, using `putItem` and `deleteItem` in a similar fashion.
 
 ### Getting a list of contacts
-To get a list of all the contacts currently listed in CMDB, pass the type 'contact' into getAllItems:
+To get a list of all the contacts currently listed in CMDB, pass the type 'contact' into `getAllItems`:
 ```
 cmdb.getAllItems(null, 'contact').then(function (body) {
 	body.forEach(function (contact) {
@@ -48,7 +50,8 @@ cmdb.getAllItems(null, 'contact').then(function (body) {
 ```
 
 ### Integrating with s3o-middleware
-If your changes made by your system are triggered by another user or system, it is recommended that the upstream user is sent to the CMDB using the [FT-Forwarded-Auth](https://docs.google.com/document/d/1ecw40CoWSOHFhq8xco5jyq5tBfdqWzH3BXiMCTKVkLw/edit#) header.  This allows for fine-grained reports to be created centrally, which may be necessary in the event of a security incident.
+If changes made by your system are triggered by another user or system, it is recommended that the upstream user is sent to the CMDB using the [FT-Forwarded-Auth](https://docs.google.com/document/d/1ecw40CoWSOHFhq8xco5jyq5tBfdqWzH3BXiMCTKVkLw/edit#) header.  This allows for fine-grained reports to be created centrally, which may be necessary in the event of a security incident.
+
 If you're using the [s3o-middleware](https://github.com/Financial-Times/s3o-middleware/) module, you can handle this automatically by passing res.locals into each call made by this library.  For example:
 ```
 var express = require('express');
