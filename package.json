@@ -1,6 +1,6 @@
 {
   "name": "cmdb.js",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A javascript library for interacting with the CMDB",
   "main": "cmdb.js",
   "scripts": {
