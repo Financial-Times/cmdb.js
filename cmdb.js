@@ -37,6 +37,10 @@ cmdb.prototype._fetch = function _fetch(locals, path, method, body) {
 	if (locals && locals.s3o_username) {
 		params.headers['FT-Forwarded-Auth'] = "ad:"+ locals.s3o_username;
 	}
+
+	// HACK: CMDB decodes paths before they hit its router, so do an extra encode on the whole path here
+	path = encodeURIComponent(path);
+	
 	return fetch(this.api + path, params).then(function(response) {
 		if (response.status >= 400) {
             throw new Error("Received "+response.status+" response from CMDB");
@@ -156,7 +160,7 @@ cmdb.prototype.deleteItem = function deleteItem(locals, type, key) {
  * @returns {Promise<Array>} A list of objects which have the type specified (NB: This refers to CMDB types, not native javascript types)
  */
 cmdb.prototype.getAllItems = function getAllItems(locals, type) {
-	return this._fetchAll(locals, this.api + 'items/' + encodeURIComponent(type));
+	return this._fetchAll(locals, this.api + encodeURIComponent('items/' + encodeURIComponent(type)));
 }
 
 module.exports = cmdb;
