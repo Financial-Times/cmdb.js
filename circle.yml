@@ -2,7 +2,7 @@ machine:
   node:
 
 deployment:
-  reelase:
+  release:
     tag: /v.*/
     owner: Financial-Times
     commands:
