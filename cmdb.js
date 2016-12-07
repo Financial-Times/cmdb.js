@@ -27,7 +27,6 @@ cmdb.prototype._fetch = function _fetch(locals, path, method, body) {
 		headers: {
 			apikey: this.apikey,
 		},
-		timeout: 6000,
 	}
 	if (method) params.method = method;
 	if (body) {
@@ -61,7 +60,6 @@ cmdb.prototype._fetchAll = function fetchAll(locals, url) {
 		headers: {
 			apikey: self.apikey,
 		},
-		timeout: 6000,
 	}
 	if (locals && locals.s3o_username) {
 		params.headers['FT-Forwarded-Auth'] = "ad:"+ locals.s3o_username;
