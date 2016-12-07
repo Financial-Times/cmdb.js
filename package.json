@@ -1,6 +1,5 @@
 {
   "name": "@financial-times/cmdb.js",
-  "version": "1.0.2",
   "description": "A javascript library for interacting with the CMDB",
   "main": "cmdb.js",
   "scripts": {
