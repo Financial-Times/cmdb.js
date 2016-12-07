@@ -8,4 +8,7 @@ deployment:
     commands:
       - npm-prepublish --verbose
       - npm publish --access public
-    
+
+test:
+  override:
+    - touch no-tests
