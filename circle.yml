@@ -1,0 +1,11 @@
+machine:
+  node:
+
+deployment:
+  reelase:
+    tag: /v.*/
+    owner: Financial-Times
+    commands:
+      - npm-prepublish --verbose
+      - npm publish --access public
+    
