@@ -1,6 +1,5 @@
 {
-  "name": "cmdb.js",
-  "version": "1.0.1",
+  "name": "@financial-times/cmdb.js",
   "description": "A javascript library for interacting with the CMDB",
   "main": "cmdb.js",
   "scripts": {
@@ -22,5 +21,8 @@
   "dependencies": {
     "es6-promise": "^3.2.1",
     "isomorphic-fetch": "^2.2.1"
+  },
+  "devDependencies": {
+    "npm-prepublish": "^1.2.0"
   }
 }
