@@ -70,44 +70,44 @@ app.post('/contacts/:contactid', function (req, res) {
 });
 ```
 
-### proposed item function reference
+### Proposed item function reference
 Via the use of optional parameters and dedicated functions it is possible to retrieve anything from a field on a single record to all fields on all records. Selection criteria and response timeouts may also be specified.
 
 * Return all records of a type that match an optional criteria
-** jsonArray = cmdb.getAllItems(locals, type, criteria = None, timeout = 6000)
+  + jsonArray = cmdb.getAllItems(locals, type, criteria = None, timeout = 6000)
 
 * Return a single record of a type
-** jsonObject = cmdb.getItem(locals, type, key, timeout = 6000)
+  + jsonObject = cmdb.getItem(locals, type, key, timeout = 6000)
 
 * Create/Update a record
-** jsonObject = cmdb.putItem(locals, type, key, body, timeout = 6000)
+  + jsonObject = cmdb.putItem(locals, type, key, body, timeout = 6000)
 
 * Delete a record
-** jsonObject = cmdb.deleteItem(locals, type, key, timeout = 6000)
+  + jsonObject = cmdb.deleteItem(locals, type, key, timeout = 6000)
 
 * Obtain count of pages and records of a type that match a criteria
-** json = cmdb.getItemCount(locals, type, criteria = None, timeout = 6000)
+  + json = cmdb.getItemCount(locals, type, criteria = None, timeout = 6000)
 
 * Return one page of records of a type that match an optional criteria
-** jsonArray = cmdb.getItemPage(locals, type, page, crieria = None, timeout = 6000)
+  + jsonArray = cmdb.getItemPage(locals, type, page, crieria = None, timeout = 6000)
 
 * Return specific fields of all records of a type that match an optional criteria
-** jsonArray = cmdb.getAllItemFields(locals, type, fields, criteria = None, timeout = 6000)
+  + jsonArray = cmdb.getAllItemFields(locals, type, fields, criteria = None, timeout = 6000)
 
 * Return specific fields of a single record of a type
-** jsonObject = cmdb.getItemFields(locals, type, key, fields, timeout = 6000)
+  + jsonObject = cmdb.getItemFields(locals, type, key, fields, timeout = 6000)
 
 * Return one page of specific fields of records of a type that match an optional criteria
-** jsonArray = cmdb.getItemPage(locals, type, fields, page, crieria = None, timeout = 6000)
+  + jsonArray = cmdb.getItemPage(locals, type, fields, page, crieria = None, timeout = 6000)
 
 
-### proposed relationship function reference
+### Proposed relationship function reference
 
 * Return a single relationship 
-** jsonObject = cmdb.getRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 6000)
+  + jsonObject = cmdb.getRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 6000)
 
 * Create/Update a relationship
-** jsonObject = cmdb.putRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 6000)
+  + jsonObject = cmdb.putRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 6000)
 
 * Delete a relationship
-** jsonObject = cmdb.deleteRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 6000)
+  + jsonObject = cmdb.deleteRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 6000)
