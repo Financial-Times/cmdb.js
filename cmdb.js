@@ -23,7 +23,7 @@ function cmdb(config) {
  * @param {Object} [body] - An object to send to the API
  * @returns {Promise<Object>} The data received from CMDB (JSON-decoded)
  */
-cmdb.prototype._fetch = function _fetch(locals, path, method, body, timeout = 6000) {
+cmdb.prototype._fetch = function _fetch(locals, path, query, method, body, timeout = 6000) {
 	var params = {
 		headers: {
 			apikey: this.apikey,
@@ -40,7 +40,10 @@ cmdb.prototype._fetch = function _fetch(locals, path, method, body, timeout = 60
 	}
 
 	// HACK: CMDB decodes paths before they hit its router, so do an extra encode on the whole path here
-//	path = encodeURIComponent(path);
+	path = encodeURIComponent(path);
+	if (query) {
+		path = path + "?" + query
+	}
 	
 	return fetch(this.api + path, params).then(function(response) {
 		if (response.status >= 400) {
@@ -173,7 +176,7 @@ function parse_link_header(header) {
  */
 cmdb.prototype.getItem = function getItem(locals, type, key, timeout = 6000){
 	var path = 'items/' + encodeURIComponent(type) + '/' + encodeURIComponent(key);
-	return this._fetch(locals, path, undefined, undefined, timeout);
+	return this._fetch(locals, path, undefined, undefined, undefined, timeout);
 };
 
 /**
@@ -188,9 +191,9 @@ cmdb.prototype.getItem = function getItem(locals, type, key, timeout = 6000){
 cmdb.prototype.getItemFields = function getItemFields(locals, type, key, fields, timeout = 6000){
 	var path = 'items/' + encodeURIComponent(type) + '/' + encodeURIComponent(key);
 	if (fields && fields != 'ALL') {
-		path = path + "&outputfields=" + fields
+		query = "outputfields=" + fields
 	}
-	return this._fetch(locals, path, undefined, undefined, timeout);
+	return this._fetch(locals, path, query, undefined, undefined, timeout);
 };
 
 /**
@@ -204,7 +207,7 @@ cmdb.prototype.getItemFields = function getItemFields(locals, type, key, fields,
  */
 cmdb.prototype.putItem = function putItem(locals, type, key, body, timeout = 6000){
 	var path = 'items/' + encodeURIComponent(type) + '/' + encodeURIComponent(key);
-	return this._fetch(locals, path, "PUT", body, timeout);
+	return this._fetch(locals, path, undefined, "PUT", body, timeout);
 };
 
 /**
@@ -217,7 +220,7 @@ cmdb.prototype.putItem = function putItem(locals, type, key, body, timeout = 600
  */
 cmdb.prototype.deleteItem = function deleteItem(locals, type, key, timeout = 6000) {
 	var path = 'items/' + encodeURIComponent(type) + '/' + encodeURIComponent(key);
-	return this._fetch(locals, path, "DELETE", undefined, timeout);
+	return this._fetch(locals, path, undefined, "DELETE", undefined, timeout);
 }
 
 /**
@@ -231,7 +234,7 @@ cmdb.prototype.deleteItem = function deleteItem(locals, type, key, timeout = 600
 cmdb.prototype.getAllItems = function getAllItems(locals, type, criteria, timeout = 6000) {
 	var path = this.api + 'items/' + encodeURIComponent(type);
 	if (criteria) {
-		path = path + "&" + criteria
+		path = path + "?" + querystring.stringify(criteria)
 	}
 	return this._fetchAll(locals, path, timeout);
 }
@@ -247,11 +250,15 @@ cmdb.prototype.getAllItems = function getAllItems(locals, type, criteria, timeou
  */
 cmdb.prototype.getAllItemFields = function getAllItemFields(locals, type, fields, criteria, timeout = 6000) {
 	var path = this.api + 'items/' + encodeURIComponent(type);
+	query = {}
 	if (fields) {
-		path = path + "&outputfields=" + fields
+		query['outputfields'] = fields.join(",")
 	}
 	if (criteria) {
-		path = path + "&" + criteria
+		query = Object.assign(query, criteria)
+	}
+	if (query) {
+		path = path + "?" + querystring.stringify(query)
 	}
 	return this._fetchAll(locals, path, timeout);
 }
@@ -266,10 +273,14 @@ cmdb.prototype.getAllItemFields = function getAllItemFields(locals, type, fields
  * @returns {Promise<Object>} The data about the count of items held in the CMDB
  */
 cmdb.prototype.getItemCount = function getItemCount(locals, type, criteria, timeout = 6000) {
-	var path = this.api + 'items/' + encodeURIComponent(type) + '?page=1&outputfields=';
+	var path = this.api + 'items/' + encodeURIComponent(type)
+	query = {}
+	query['page'] = 1
+	query['outputfields'] = ''
 	if (criteria) {
-		path = path + "&" + criteria
+		query = Object.assign(query, criteria)
 	}
+	path = path + "?" + querystring.stringify(query)
 	return this._fetchCount(locals, path, timeout);
 };
 
@@ -283,12 +294,13 @@ cmdb.prototype.getItemCount = function getItemCount(locals, type, criteria, time
  * @returns {Promise<Object>} The data about the item held in the CMDB
  */
 cmdb.prototype.getItemPage = function getItemPage(locals, type, page = 1, criteria, timeout = 6000) {
-	var path = 'items/' + encodeURIComponent(type) + '?page=' + page;
+	var path = 'items/' + encodeURIComponent(type);
+	query['page'] = page;
 	if (criteria) {
-		path = path + "&" + criteria
+		query = Object.assign(query, criteria)
 	}
 
-	return this._fetch(locals, path, undefined, undefined, timeout);
+	return this._fetch(locals, path, querystring.stringify(query), undefined, undefined, timeout);
 };
 
 /**
@@ -301,14 +313,17 @@ cmdb.prototype.getItemPage = function getItemPage(locals, type, page = 1, criter
  * @returns {Promise<Object>} The data about the item held in the CMDB
  */
 cmdb.prototype.getItemPageFields = function getItemPageFields(locals, type, page = 1, fields, criteria, timeout = 6000) {
-	var path = 'items/' + encodeURIComponent(type) + '?page=' + page;
-	if (criteria) {
-		path = path + "&" + criteria
-	}
+	var path = 'items/' + encodeURIComponent(type)
+	var query = {}
+	query['page'] = page;
 	if (fields) {
-		path = path + '&outputfields=' + fields
+		query['outputfields'] = fields.join(",")
 	}
-	return this._fetch(locals, path, undefined, undefined, timeout);
+	if (criteria) {
+		query = Object.assign(query, criteria)
+	}
+	console.log("getItemPageFields:", querystring.stringify(query))
+	return this._fetch(locals, path, querystring.stringify(query), undefined, undefined, timeout);
 };
 
 module.exports = cmdb;
