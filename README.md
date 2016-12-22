@@ -70,12 +70,12 @@ app.post('/contacts/:contactid', function (req, res) {
 });
 ```
 
-### Proposed item function reference
-Via the use of optional parameters and dedicated functions it is possible to retrieve anything from a single field on a single record to all fields on all records. Selection criteria and response timeouts may also be specified.
+### Item function reference
+Via the use of optional parameters and dedicated functions it is possible to retrieve anything from a single field on a single record to all fields on all records. Selection criteria and response timeouts may also be specified.  BEWARE there is an ongoing discussion re how the underlying fetch() function handles timeouts.
 
-The criteria parameter defines the query string to use to restrict the number of records that are returned. It followes the normal name=value&name=value... syntax
+The criteria parameter defines the query string to use to restrict the number of records that are returned. It expects an object of name/value pairs. A blank value for a name indicates a query for records that dont include the name as an attribute. Values can include wildcard characters of * and ?
 
-The fields parameter defines which fields are to be output for each record. It expects a comma separated list of field names. Note that dataItemID, dataTypeID and lastUpdate will always be output.
+The fields parameter defines which fields are to be output for each record. It expects an array of field names. Note that dataItemID, dataTypeID and lastUpdate will always be output.
 
 All returned JSON arrays and JSON objects are native javascript
 
@@ -109,7 +109,7 @@ All returned JSON arrays and JSON objects are native javascript
   + jsonArray = cmdb.getItemPageFields(locals, type, fields, page, crieria = None, timeout = 6000)
 
 
-### Proposed relationship function reference
+### Proposed relationship function reference (not implemented yet)
 
 * Return a single relationship 
   + jsonObject = cmdb.getRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 6000)
