@@ -25,5 +25,5 @@
   },
   "devDependencies": {
     "npm-prepublish": "^1.2.0"
-  } 
+  }
 }
