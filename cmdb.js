@@ -29,6 +29,7 @@ cmdb.prototype._fetch = function _fetch(locals, path, query, method, body, timeo
 	var params = {
 		headers: {
 			apikey: this.apikey,
+			"x-api-key": this.apikey
 		},
 		timeout: timeout,
 	}
@@ -42,7 +43,10 @@ cmdb.prototype._fetch = function _fetch(locals, path, query, method, body, timeo
 	}
 
 	// HACK: CMDB decodes paths before they hit its router, so do an extra encode on the whole path here
-	path = encodeURIComponent(path);
+	// Check for existence of CMDBV3 variable to avoid encoding
+    if (!process.env.CMDBV3) {
+		path = encodeURIComponent(path);
+    }
 	if (query) {
 		path = path + "?" + query
 	}
@@ -67,6 +71,7 @@ cmdb.prototype._fetchCount = function fetchCount(locals, url, timeout = 12000) {
 	var params = {
 		headers: {
 			apikey: self.apikey,
+			"x-api-key": self.apikey
 		},
 		timeout: timeout,
 	}
@@ -114,6 +119,7 @@ cmdb.prototype._fetchAll = function fetchAll(locals, url, timeout = 12000) {
 	var params = {
 		headers: {
 			apikey: self.apikey,
+			"x-api-key": self.apikey
 		},
 		timeout: timeout,
 	}
@@ -140,6 +146,8 @@ cmdb.prototype._fetchAll = function fetchAll(locals, url, timeout = 12000) {
 		} else {
       		return response.json();
       	}
+	}).catch(function(error) {
+		console.log(error)
 	});
 }
 
@@ -189,8 +197,8 @@ cmdb.prototype.getItem = function getItem(locals, type, key, timeout = 12000){
  * @param {string} type - The type of item being requested
  * @param {string} key - The key of the item being requested
  * @param {string} fields - The list of fields to return
- * @param {string} [relatedFields=True] - Whether to output nested related information
- * @param {number} [timeout=12000] - the optional timeout period in milliseconds
+ * @param (string) relatedFields - Whether to included nested relationship information (optional, defaults to True)
+ * @param {number} timeout - The timeout limit (optional)
  * @returns {Promise<Object>} The data about the item held in the CMDB
  */
 cmdb.prototype.getItemFields = function getItemFields(locals, type, key, fields, relatedFields, timeout = 12000){
@@ -237,12 +245,21 @@ cmdb.prototype.deleteItem = function deleteItem(locals, type, key, timeout = 120
  * @param {Object} [locals] - The res.locals value from a request in express
  * @param {string} type - The type of items to fetch
  * @param {string} criteria - The query parameter(s) to restrict items (optional)
+ * @param {number} limit - The number of records to return in one underlying page fetch call (optional)
  * @param {number} timeout - The timeout limit (optional)
  * @returns {Promise<Array>} A list of objects which have the type specified (NB: This refers to CMDB types, not native javascript types)
  */
-cmdb.prototype.getAllItems = function getAllItems(locals, type, criteria, timeout = 12000) {
+cmdb.prototype.getAllItems = function getAllItems(locals, type, criteria, limit, timeout = 12000) {
+
 	var path = this.api + 'items/' + encodeURIComponent(type);
+	query = {}
 	if (criteria) {
+		query = Object.assign(query, criteria)
+	}
+	if (limit) {
+        query['limit'] = limit
+    }
+	if (query) {
 		path = path + "?" + querystring.stringify(criteria)
 	}
 	return this._fetchAll(locals, path, timeout);
@@ -254,11 +271,12 @@ cmdb.prototype.getAllItems = function getAllItems(locals, type, criteria, timeou
  * @param {string} type - The type of items to fetch
  * @param {string} fields - The list of fields to retrurn
  * @param {string} criteria - The query parameter(s) to restrict items (optional)
- * @param {string} [relatedFields=True] - Whether to output nested related information
- * @param {number} [timeout=12000] - the optional timeout period in milliseconds
+ * @param (string) relatedFields - Whether to included nested relationship information (optional, defaults to True)
+ * @param {number} limit - The number of records to return in one underlying page fetch call (optional)
+ * @param {number} timeout - The timeout limit (optional)
  * @returns {Promise<Array>} A list of objects which have the type specified (NB: This refers to CMDB types, not native javascript types)
  */
-cmdb.prototype.getAllItemFields = function getAllItemFields(locals, type, fields, criteria, relatedFields, timeout = 12000) {
+cmdb.prototype.getAllItemFields = function getAllItemFields(locals, type, fields, criteria, relatedFields, limit, timeout = 12000) {
 	var path = this.api + 'items/' + encodeURIComponent(type);
 	query = {}
 	if (fields) {
@@ -270,6 +288,9 @@ cmdb.prototype.getAllItemFields = function getAllItemFields(locals, type, fields
 	if (criteria) {
 		query = Object.assign(query, criteria)
 	}
+    if (limit) {
+        query['limit'] = limit
+    }
 	if (query) {
 		path = path + "?" + querystring.stringify(query)
 	}
@@ -305,11 +326,12 @@ cmdb.prototype.getItemCount = function getItemCount(locals, type, criteria, time
  * @param {string} type - The type of item being requested
  * @param {number} page - The number of the page to return
  * @param {string} criteria - The query parameter(s) to restrict items (optional)
- * @param {string} [relatedFields=True] - Whether to output nested related information
- * @param {number} [timeout=12000] - the optional timeout period in milliseconds
+ * @param (string) relatedFields - Whether to included nested relationship information (optional, defaults to True)
+ * @param {number} limit - The number of records to return in one underlying page fetch call (optional)
+ * @param {number} timeout - The timeout limit (optional)
  * @returns {Promise<Object>} The data about the item held in the CMDB
  */
-cmdb.prototype.getItemPage = function getItemPage(locals, type, page = 1, criteria, relatedFields, timeout = 12000) {
+cmdb.prototype.getItemPage = function getItemPage(locals, type, page = 1, criteria, relatedFields, limit, timeout = 12000) {
 	var path = 'items/' + encodeURIComponent(type);
 	query['page'] = page;
 	if (relatedFields) {
@@ -318,7 +340,9 @@ cmdb.prototype.getItemPage = function getItemPage(locals, type, page = 1, criter
 	if (criteria) {
 		query = Object.assign(query, criteria)
 	}
-
+	if (limit) {
+        query['limit'] = limit
+    }
 	return this._fetch(locals, path, querystring.stringify(query), undefined, undefined, timeout).then(function(response) {
 		return response
 	}).catch(function (error) {
@@ -335,11 +359,12 @@ cmdb.prototype.getItemPage = function getItemPage(locals, type, page = 1, criter
  * @param {string} type - The type of item being requested
  * @param {number} page - The number of the page to return
  * @param {string} criteria - The query parameter(s) to restrict items (optional)
- * @param {string} [relatedFields=True] - Whether to output nested related information
- * @param {number} [timeout=12000] - the optional timeout period in milliseconds
+ * @param {number} limit - The number of records to return in one underlying page fetch call (optional)
+ * @param {number} timeout - The timeout limit (optional)
  * @returns {Promise<Object>} The data about the item held in the CMDB
  */
-cmdb.prototype.getItemPageFields = function getItemPageFields(locals, type, page = 1, fields, criteria, relatedFields, timeout = 12000) {
+cmdb.prototype.getItemPageFields = function getItemPageFields(locals, type, page = 1, fields, criteria, relatedFields, limit, timeout = 12000) {
+
 	var path = 'items/' + encodeURIComponent(type)
 	var query = {}
 	query['page'] = page;
@@ -352,7 +377,10 @@ cmdb.prototype.getItemPageFields = function getItemPageFields(locals, type, page
 	if (criteria) {
 		query = Object.assign(query, criteria)
 	}
-	console.log("getItemPageFields:", querystring.stringify(query))
+	if (limit) {
+        query['limit'] = limit
+    }
+   	console.log("getItemPageFields:", querystring.stringify(query))
 	return this._fetch(locals, path, querystring.stringify(query), undefined, undefined, timeout).then(function(response) {
 		return response
 	}).catch(function (error) {

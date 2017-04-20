@@ -81,35 +81,50 @@ The relatedFields parameter indicates if nested related item data is to be outou
 
 All returned JSON arrays and JSON objects are native javascript
 
-
-* Return all records of a type that match an optional criteria
-  + jsonArray = cmdb.getAllItems(locals, type, criteria = None, timeout = 12000)
+* Return all records of a type that match an optional criteria. The internal page buffer size defaults to 50
+```
+  jsonArray = cmdb.getAllItems(locals, type [,criteria = None] [, limit = 50] [,timeout = 12000])
+```
 
 * Return a single record of a type
-  + jsonObject = cmdb.getItem(locals, type, key, timeout = 12000)
+```
+  jsonObject = cmdb.getItem(locals, type, key [,timeout = 12000])
+```
 
 * Create/Update a record
-  + jsonObject = cmdb.putItem(locals, type, key, body, timeout = 12000)
+```
+  jsonObject = cmdb.putItem(locals, type, key, body [, timeout = 12000])
+```
 
 * Delete a record
-  + jsonObject = cmdb.deleteItem(locals, type, key, timeout = 12000)
+```
+  jsonObject = cmdb.deleteItem(locals, type, key [, timeout = 12000])
+```
 
-* Obtain count of pages and records of a type that match a criteria. The response is a jSON array {'pages': nnn, 'items':nnn}
-  + json = cmdb.getItemCount(locals, type, criteria = None, timeout = 12000)
-}
+* Obtain count of pages and records of a type that match a optional criteria. The response is a jSON object {'pages': nnn, 'items':nnn}
+```
+  jsonObject = cmdb.getItemCount(locals, type [, criteria = None] [, timeout = 12000])
+```
 
-* Return one page of records of a type that match an optional criteria
-  + jsonArray = cmdb.getItemPage(locals, type, page, criteria = None, relatedFields = true, timeout = 12000)
+* Return one page of records of a type that match an optional criteria. The page size defaults to 50. You can exclude nested related data.
+```
+  jsonArray = cmdb.getItemPage(locals, type, page [, criteria = None] [, relatedFields = "True"] [, limit = 50] [, timeout = 12000])
+```
 
-* Return specific fields of all records of a type that match an optional criteria
-  + jsonArray = cmdb.getAllItemFields(locals, type, fields, criteria = None, relatedFields = true, timeout = 12000)
+* Return specific fields of all records of a type that match an optional criteria. The internal page buffer size defaults to 50. You can exclude nested related data.
+```
+  jsonArray = cmdb.getAllItemFields(locals, type, fields [, criteria = None] [, relatedFields = "True"] [,limit = 50] [, timeout = 12000])
+```
 
-* Return specific fields of a single record of a type
-  + jsonObject = cmdb.getItemFields(locals, type, key, fields, relatedFields = true, timeout = 12000)
+* Return specific fields of a single record of a type.
+```
+  jsonObject = cmdb.getItemFields(locals, type, key, fields [, timeout = 12000])
+```
 
-* Return one page of specific fields of records of a type that match an optional criteria
-  + jsonArray = cmdb.getItemPageFields(locals, type, fields, page, crieria = None, relatedFields = true, timeout = 12000)
-
+* Return one page of specific fields of records of a type that match an optional criteria. The page size defaults to 50.  You can exclude nested related data.
+```
+  jsonArray = cmdb.getItemPageFields(locals, type, page, fields, [, crieria = None] [, relatedFields = "True"] [,limit = 50] [, timeout = 12000])
+```
 
 ### Proposed relationship function reference (not implemented yet)
 
