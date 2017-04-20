@@ -6,6 +6,7 @@ deployment:
     tag: /v.*/
     owner: Financial-Times
     commands:
+      - npm version major
       - npm-prepublish --verbose
       - npm publish --access public
 
