@@ -77,8 +77,9 @@ The criteria parameter defines the query string to use to restrict the number of
 
 The fields parameter defines which fields are to be output for each record. It expects an array of field names. Note that dataItemID, dataTypeID and lastUpdate will always be output.
 
-All returned JSON arrays and JSON objects are native javascript
+The relatedFields parameter indicates if nested related item data is to be outout. If set to false then performance is improved at the expense of detail; no related items are shown just the item itself.
 
+All returned JSON arrays and JSON objects are native javascript
 
 * Return all records of a type that match an optional criteria. The internal page buffer size defaults to 50
 ```
@@ -128,10 +129,10 @@ All returned JSON arrays and JSON objects are native javascript
 ### Proposed relationship function reference (not implemented yet)
 
 * Return a single relationship 
-  + jsonObject = cmdb.getRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 6000)
+  + jsonObject = cmdb.getRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 12000)
 
 * Create/Update a relationship
-  + jsonObject = cmdb.putRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 6000)
+  + jsonObject = cmdb.putRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 12000)
 
 * Delete a relationship
-  + jsonObject = cmdb.deleteRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 6000)
+  + jsonObject = cmdb.deleteRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 12000)
