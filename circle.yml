@@ -6,8 +6,6 @@ deployment:
     tag: /v.*/
     owner: Financial-Times
     commands:
-      - git tag -l --points-at HEAD
-      - npm-prepublish --verbose
       - printf "_auth = $NPM_AUTH_TOKEN\nemail = $NPM_EMAIL\n" > .npmrc
       - npm publish --access public
 

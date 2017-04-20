@@ -1,7 +1,7 @@
 {
   "name": "@financial-times/cmdb.js",
   "description": "A javascript library for interacting with the CMDB",
-  "version": "0.0.0",
+  "version": "2.0.2",
   "main": "cmdb.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
