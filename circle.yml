@@ -4,7 +4,6 @@ machine:
 deployment:
   release:
     tag: /v.*/
-    owner: Financial-Times
     commands:
       - printf "_auth = $NPM_AUTH_TOKEN\nemail = $NPM_EMAIL\n" > .npmrc
       - npm publish --access public
