@@ -5,7 +5,7 @@ deployment:
   release:
     tag: /v.*/
     commands:
-      - printf "_auth = $NPM_AUTH_TOKEN\nemail = $NPM_EMAIL\n" > .npmrc
+      - printf "_auth = $NPM_AUTH\nemail = $NPM_EMAIL\n" > .npmrc
       - npm publish --access public
 
 test:
