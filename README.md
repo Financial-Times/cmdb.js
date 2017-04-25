@@ -15,7 +15,7 @@ Pass in your apikey to the library to authenticate requests:
 ```
 var CMDBclass = require("cmdb.js");
 var cmdb = new CMDBclass({
-	apikey: process.env.APIKEY,
+    apikey: process.env.APIKEY,
 });
 ```
 
@@ -23,8 +23,8 @@ If you're playing with test or development data, you should point the library to
 ```
 var CMDBclass = require("cmdb.js");
 var cmdb = new CMDBclass({
-	api: "https://cmdb-test.ft.com/v2/",
-	apikey: process.env.APIKEY,
+    api: "https://cmdb-test.ft.com/v2/",
+    apikey: process.env.APIKEY,
 });
 ```
 
@@ -33,9 +33,9 @@ Once you've setup the class with an apikey, you can get information about a give
 ```
 var systemCode = 'ft-dashing';
 cmdb.getItem(null, 'system', systemCode).then(function (result) {
-	console.log(result);
+    console.log(result);
 }).catch(function (error) {
-	console.err('an error occured')
+    console.err('an error occured')
 });
 ```
 You can also create/update and delete items, using `putItem` and `deleteItem` in a similar fashion.
@@ -44,9 +44,9 @@ You can also create/update and delete items, using `putItem` and `deleteItem` in
 To get a list of all the contacts currently listed in CMDB, pass the type 'contact' into `getAllItems`:
 ```
 cmdb.getAllItems(null, 'contact').then(function (body) {
-	body.forEach(function (contact) {
-		console.log(contact);
-	});
+    body.forEach(function (contact) {
+        console.log(contact);
+    });
 });
 ```
 
@@ -61,13 +61,13 @@ var authS3O = require('s3o-middleware');
 app.use(authS3O);
 var CMDBclass = require("cmdb.js");
 var cmdb = new CMDBclass({
-	apikey: process.env.APIKEY,
+    apikey: process.env.APIKEY,
 });
 
 app.post('/contacts/:contactid', function (req, res) {
-	cmdb.putItem(res.locals, 'contact', req.params.contactid, req.body).then(function (result) {
-		res.render('contact', result);
-	});
+    cmdb.putItem(res.locals, 'contact', req.params.contactid, req.body).then(function (result) {
+        res.render('contact', result);
+    });
 });
 ```
 
@@ -85,48 +85,48 @@ All returned JSON arrays and JSON objects are native javascript
 * Return all records of a type that match an optional criteria. The internal page buffer size defaults to 50
 ```
   jsonArray = cmdb.getAllItems(  locals
-  							   , type 
-  							  [, criteria = None]
-  							  [, limit = 50] 
-  							  [, timeout = 12000]
-  							  )
+                               , type 
+                              [, criteria = None]
+                              [, limit = 50] 
+                              [, timeout = 12000]
+                              )
 ```
 
 * Return a single record of a type
 ```
   jsonObject = cmdb.getItem(  locals
-  							, type
-  							, key 
-  						   [, timeout = 12000]
-  						   )
+                            , type
+                            , key 
+                           [, timeout = 12000]
+                           )
 ```
 
 * Create/Update a record
 ```
-  jsonObject = cmdb.putItem(   locals
-  							 , type
-  							 , key
-  							 , body
-  							[, timeout = 12000]
-  							)
+  jsonObject = cmdb.putItem(  locals
+                            , type
+                            , key
+                            , body
+                           [, timeout = 12000]
+                           )
 ```
 
 * Delete a record
 ```
   jsonObject = cmdb.deleteItem(  locals
-  							   , type
-  							   , key
-  							  [, timeout = 12000]
-  							  )
+                               , type
+                               , key
+                              [, timeout = 12000]
+                              )
 ```
 
 * Obtain count of pages and records of a type that match a optional criteria. The response is a jSON object {'pages': nnn, 'items':nnn}
 ```
   jsonObject = cmdb.getItemCount(  locals
-  								 , type
-  								[, criteria = None]
-  								[, timeout = 12000]
-  								)
+                                 , type
+                                [, criteria = None]
+                                [, timeout = 12000]
+                                )
 ```
 
 * Return one page of records of a type that match an optional criteria. The page size defaults to 50. You can exclude nested related data.
