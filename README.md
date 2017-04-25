@@ -8,13 +8,14 @@ A javascript library for interacting with the CMDB
 Pull requests welcomed.
 
 ## Usage
+If you are accessing CMDBv3 then ensure you define an environment variable named "CMDBV3" as "True" as this ensures the urls are passed to AWS correctly.
 
 ### Inital Setup
 Pass in your apikey to the library to authenticate requests:
 ```
 var CMDBclass = require("cmdb.js");
 var cmdb = new CMDBclass({
-	apikey: process.env.APIKEY,
+    apikey: process.env.APIKEY,
 });
 ```
 
@@ -22,8 +23,8 @@ If you're playing with test or development data, you should point the library to
 ```
 var CMDBclass = require("cmdb.js");
 var cmdb = new CMDBclass({
-	api: "https://cmdb-test.ft.com/v2/",
-	apikey: process.env.APIKEY,
+    api: "https://cmdb-test.ft.com/v2/",
+    apikey: process.env.APIKEY,
 });
 ```
 
@@ -32,9 +33,9 @@ Once you've setup the class with an apikey, you can get information about a give
 ```
 var systemCode = 'ft-dashing';
 cmdb.getItem(null, 'system', systemCode).then(function (result) {
-	console.log(result);
+    console.log(result);
 }).catch(function (error) {
-	console.err('an error occured')
+    console.err('an error occured')
 });
 ```
 You can also create/update and delete items, using `putItem` and `deleteItem` in a similar fashion.
@@ -43,9 +44,9 @@ You can also create/update and delete items, using `putItem` and `deleteItem` in
 To get a list of all the contacts currently listed in CMDB, pass the type 'contact' into `getAllItems`:
 ```
 cmdb.getAllItems(null, 'contact').then(function (body) {
-	body.forEach(function (contact) {
-		console.log(contact);
-	});
+    body.forEach(function (contact) {
+        console.log(contact);
+    });
 });
 ```
 
@@ -60,12 +61,128 @@ var authS3O = require('s3o-middleware');
 app.use(authS3O);
 var CMDBclass = require("cmdb.js");
 var cmdb = new CMDBclass({
-	apikey: process.env.APIKEY,
+    apikey: process.env.APIKEY,
 });
 
 app.post('/contacts/:contactid', function (req, res) {
-	cmdb.putItem(res.locals, 'contact', req.params.contactid, req.body).then(function (result) {
-		res.render('contact', result);
-	});
+    cmdb.putItem(res.locals, 'contact', req.params.contactid, req.body).then(function (result) {
+        res.render('contact', result);
+    });
 });
 ```
+
+### Item function reference
+Via the use of optional parameters and dedicated functions it is possible to retrieve anything from a single field on a single record to all fields on all records. Selection criteria and response timeouts may also be specified.  BEWARE there is an ongoing discussion re how the underlying fetch() function handles timeouts.
+
+The criteria parameter defines the query string to use to restrict the number of records that are returned. It expects an object of name/value pairs. A blank value for a name indicates a query for records that dont include the name as an attribute. Values can include wildcard characters of * and ?
+
+The fields parameter defines which fields are to be output for each record. It expects an array of field names. Note that dataItemID, dataTypeID and lastUpdate will always be output.
+
+The relatedFields parameter indicates if nested related item data is to be outout. If set to false then performance is improved at the expense of detail; no related items are shown just the item itself.
+
+All returned JSON arrays and JSON objects are native javascript
+
+* Return all records of a type that match an optional criteria. The internal page buffer size defaults to 50
+```
+  jsonArray = cmdb.getAllItems(  locals
+                               , type 
+                              [, criteria = None]
+                              [, limit = 50] 
+                              [, timeout = 12000]
+                              )
+```
+
+* Return a single record of a type
+```
+  jsonObject = cmdb.getItem(  locals
+                            , type
+                            , key 
+                           [, timeout = 12000]
+                           )
+```
+
+* Create/Update a record
+```
+  jsonObject = cmdb.putItem(  locals
+                            , type
+                            , key
+                            , body
+                           [, timeout = 12000]
+                           )
+```
+
+* Delete a record
+```
+  jsonObject = cmdb.deleteItem(  locals
+                               , type
+                               , key
+                              [, timeout = 12000]
+                              )
+```
+
+* Obtain count of pages and records of a type that match a optional criteria. The response is a jSON object {'pages': nnn, 'items':nnn}
+```
+  jsonObject = cmdb.getItemCount(  locals
+                                 , type
+                                [, criteria = None]
+                                [, timeout = 12000]
+                                )
+```
+
+* Return one page of records of a type that match an optional criteria. The page size defaults to 50. You can exclude nested related data.
+```
+  jsonArray = cmdb.getItemPage(  locals
+                               , type
+                               , page
+                              [, criteria = None]
+                              [, relatedFields = "True"]
+                              [, limit = 50]
+                              [, timeout = 12000]
+                              )
+```
+
+* Return specific fields of all records of a type that match an optional criteria. The internal page buffer size defaults to 50. You can exclude nested related data.
+```
+  jsonArray = cmdb.getAllItemFields(  locals
+                                    , type
+                                    , fields
+                                   [, criteria = None]
+                                   [, relatedFields = "True"]
+                                   [,limit = 50]
+                                   [, timeout = 12000]
+                                   )
+```
+
+* Return specific fields of a single record of a type.
+```
+  jsonObject = cmdb.getItemFields(  locals
+                                  , type
+                                  , key
+                                  , fields
+                                 [, timeout = 12000]
+                                 )
+```
+
+* Return one page of specific fields of records of a type that match an optional criteria. The page size defaults to 50.  You can exclude nested related data.
+```
+  jsonArray = cmdb.getItemPageFields(  locals
+                                     , type
+                                     , page
+                                     , fields
+                                    [, crieria = None]
+                                    [, relatedFields = "True"]
+                                    [,limit = 50]
+                                    [, timeout = 12000]
+                                    )
+```
+
+### Proposed relationship function reference (not implemented yet)
+
+* Return a single relationship 
+  + jsonObject = cmdb.getRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 12000)
+
+* Create/Update a relationship
+  + jsonObject = cmdb.putRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 12000)
+
+* Delete a relationship
+  + jsonObject = cmdb.deleteRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 12000)

@@ -1,7 +1,7 @@
 {
   "name": "cmdb.js",
-  "version": "1.0.1",
   "description": "A javascript library for interacting with the CMDB",
+  "version": "2.0.4",
   "main": "cmdb.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -22,5 +22,8 @@
   "dependencies": {
     "es6-promise": "^3.2.1",
     "isomorphic-fetch": "^2.2.1"
+  },
+  "devDependencies": {
+    "npm-prepublish": "^1.2.0"
   }
 }
