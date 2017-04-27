@@ -10,7 +10,7 @@ const querystring = require('querystring');
  */
 function cmdb(config) {
 	if (typeof config != 'object') config = {};
-	this.api = config.api || 'https://cmdb.ft.com/v2/';
+	this.api = config.api || 'https://cmdb.in.ft.com/v3/';
 	if (this.api.slice(-1) != '/') this.api += '/';
 	this.apikey = config.apikey || 'changeme';
 }
@@ -44,9 +44,9 @@ cmdb.prototype._fetch = function _fetch(locals, path, query, method, body, timeo
 
 	// HACK: CMDB decodes paths before they hit its router, so do an extra encode on the whole path here
 	// Check for existence of CMDBV3 variable to avoid encoding
-    if (!process.env.CMDBV3) {
-		path = encodeURIComponent(path);
-    }
+//     if (!process.env.CMDBV3) {
+// 		path = encodeURIComponent(path);
+//     }
 	if (query) {
 		path = path + "?" + query
 	}
