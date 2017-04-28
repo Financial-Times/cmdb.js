@@ -1,14 +1,14 @@
 # cmdb.js
-A javascript library for interacting with the CMDB
+A javascript library for interacting with the CMDB v3 (cmdb v2 is now retired)
 
 ## Warnings
 * Currently only written for usage server-side (using node.js)
 * Examples (and possibly implementation) biased toward express apps.
+* CMDB v3 is only directly compatible with v3.0.1 and above of this library
 
 Pull requests welcomed.
 
 ## Usage
-If you are accessing CMDBv3 then ensure you define an environment variable named "CMDBV3" as "True" as this ensures the urls are passed to AWS correctly.
 
 ### Inital Setup
 Pass in your apikey to the library to authenticate requests:
@@ -23,7 +23,7 @@ If you're playing with test or development data, you should point the library to
 ```
 var CMDBclass = require("cmdb.js");
 var cmdb = new CMDBclass({
-    api: "https://cmdb-test.ft.com/v2/",
+    api: "https://cmdb-test.in.ft.com/v3/",
     apikey: process.env.APIKEY,
 });
 ```
