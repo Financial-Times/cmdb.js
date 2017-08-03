@@ -15,6 +15,7 @@ Pass in your apikey to the library to authenticate requests:
 ```
 var CMDBclass = require("cmdb.js");
 var cmdb = new CMDBclass({
+    api: "https://cmdb.in.ft.com/v3/",
     apikey: process.env.APIKEY,
 });
 ```
@@ -40,15 +41,24 @@ cmdb.getItem(null, 'system', systemCode).then(function (result) {
 ```
 You can also create/update and delete items, using `putItem` and `deleteItem` in a similar fashion.
 
-### Getting a list of contacts
-To get a list of all the contacts currently listed in CMDB, pass the type 'contact' into `getAllItems`:
+### Getting a list of systems
+To get a list of all the systems currently listed in CMDB, pass the type 'system' into `getAllItems`:
 ```
-cmdb.getAllItems(null, 'contact').then(function (body) {
+cmdb.getAllItems(null, 'systems').then(function (body) {
     body.forEach(function (contact) {
         console.log(contact);
     });
 });
 ```
+
+**Beware, calls to getAllItems can attempt to return a large amount of data** - and therefore timeout. A better approach is to refine your request to focus on the actual data you require. For example:
+* restrict the output by a search criteria
+* reduce the set of fields being returned
+* only return a page of data
+* all the above!
+
+See the **Function Reference** below for more details on these targeted requests.
+
 
 ### Integrating with s3o-middleware
 If changes made by your system are triggered by another user or system, it is recommended that the upstream user is sent to the CMDB using the [FT-Forwarded-Auth](https://docs.google.com/document/d/1ecw40CoWSOHFhq8xco5jyq5tBfdqWzH3BXiMCTKVkLw/edit#) header.  This allows for fine-grained reports to be created centrally, which may be necessary in the event of a security incident.
