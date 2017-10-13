@@ -3,7 +3,11 @@ module.exports = {
     plugins: ['prettier'],
     rules: {
         'prettier/prettier': 'error',
-        'no-underscore-dangle': 'off'
+        'no-underscore-dangle': 'off',
+        'import/no-extraneous-dependencies': [
+            'error',
+            { devDependencies: ['**/*.test.js', 'rollup.*.js'] }
+        ]
     },
     parserOptions: {
         sourceType: 'module'
