@@ -12,18 +12,18 @@ Pull requests welcomed.
 
 ### Inital Setup
 Pass in your apikey to the library to authenticate requests:
-```
-var CMDBclass = require("cmdb.js");
-var cmdb = new CMDBclass({
+```js
+const Cmdb = require("cmdb.js");
+const cmdb = new Cmdb({
     api: "https://cmdb.in.ft.com/v3/",
     apikey: process.env.APIKEY,
 });
 ```
 
 If you're playing with test or development data, you should point the library to a test environment, to avoid corrupting production:
-```
-var CMDBclass = require("cmdb.js");
-var cmdb = new CMDBclass({
+```js
+const Cmdb = require("cmdb.js");
+const cmdb = new Cmdb({
     api: "https://cmdb-test.in.ft.com/v3/",
     apikey: process.env.APIKEY,
 });
@@ -31,21 +31,21 @@ var cmdb = new CMDBclass({
 
 ### Getting information about a system
 Once you've setup the class with an apikey, you can get information about a given system by passing in the type 'system' and relevant system code into `getItem`:
-```
-var systemCode = 'ft-dashing';
-cmdb.getItem(null, 'system', systemCode).then(function (result) {
+```js
+const systemCode = 'ft-dashing';
+cmdb.getItem(null, 'system', systemCode).then((result) => {
     console.log(result);
-}).catch(function (error) {
-    console.err('an error occured')
+}).catch((error) => {
+    console.error('an error occured')
 });
 ```
 You can also create/update and delete items, using `putItem` and `deleteItem` in a similar fashion.
 
 ### Getting a list of systems
 To get a list of all the systems currently listed in CMDB, pass the type 'system' into `getAllItems`:
-```
-cmdb.getAllItems(null, 'systems').then(function (body) {
-    body.forEach(function (contact) {
+```js
+cmdb.getAllItems(null, 'systems').then((body) => {
+    body.forEach((contact) => {
         console.log(contact);
     });
 });
@@ -64,18 +64,18 @@ See the **Function Reference** below for more details on these targeted requests
 If changes made by your system are triggered by another user or system, it is recommended that the upstream user is sent to the CMDB using the [FT-Forwarded-Auth](https://docs.google.com/document/d/1ecw40CoWSOHFhq8xco5jyq5tBfdqWzH3BXiMCTKVkLw/edit#) header.  This allows for fine-grained reports to be created centrally, which may be necessary in the event of a security incident.
 
 If you're using the [s3o-middleware](https://github.com/Financial-Times/s3o-middleware/) module, you can handle this automatically by passing res.locals into each call made by this library.  For example:
-```
-var express = require('express');
-var app = express();
-var authS3O = require('s3o-middleware');
+```js
+const express = require('express');
+const app = express();
+const authS3O = require('s3o-middleware');
 app.use(authS3O);
-var CMDBclass = require("cmdb.js");
-var cmdb = new CMDBclass({
+const Cmdb = require("cmdb.js");
+const cmdb = new Cmdb({
     apikey: process.env.APIKEY,
 });
 
 app.post('/contacts/:contactid', function (req, res) {
-    cmdb.putItem(res.locals, 'contact', req.params.contactid, req.body).then(function (result) {
+    cmdb.putItem(res.locals, 'contact', req.params.contactid, req.body).then((result) => {
         res.render('contact', result);
     });
 });
@@ -93,26 +93,26 @@ The relatedFields parameter indicates if nested related item data is to be outou
 All returned JSON arrays and JSON objects are native javascript
 
 * Return all records of a type that match an optional criteria. The internal page buffer size defaults to 50
-```
+```js
   jsonArray = cmdb.getAllItems(  locals
-                               , type 
+                               , type
                               [, criteria = None]
-                              [, limit = 50] 
+                              [, limit = 50]
                               [, timeout = 12000]
                               )
 ```
 
 * Return a single record of a type
-```
+```js
   jsonObject = cmdb.getItem(  locals
                             , type
-                            , key 
+                            , key
                            [, timeout = 12000]
                            )
 ```
 
 * Create/Update a record
-```
+```js
   jsonObject = cmdb.putItem(  locals
                             , type
                             , key
@@ -122,7 +122,7 @@ All returned JSON arrays and JSON objects are native javascript
 ```
 
 * Delete a record
-```
+```js
   jsonObject = cmdb.deleteItem(  locals
                                , type
                                , key
@@ -131,7 +131,7 @@ All returned JSON arrays and JSON objects are native javascript
 ```
 
 * Obtain count of pages and records of a type that match a optional criteria. The response is a jSON object {'pages': nnn, 'items':nnn}
-```
+```js
   jsonObject = cmdb.getItemCount(  locals
                                  , type
                                 [, criteria = None]
@@ -140,7 +140,7 @@ All returned JSON arrays and JSON objects are native javascript
 ```
 
 * Return one page of records of a type that match an optional criteria. The page size defaults to 50. You can exclude nested related data.
-```
+```js
   jsonArray = cmdb.getItemPage(  locals
                                , type
                                , page
@@ -152,7 +152,7 @@ All returned JSON arrays and JSON objects are native javascript
 ```
 
 * Return specific fields of all records of a type that match an optional criteria. The internal page buffer size defaults to 50. You can exclude nested related data.
-```
+```js
   jsonArray = cmdb.getAllItemFields(  locals
                                     , type
                                     , fields
@@ -164,7 +164,7 @@ All returned JSON arrays and JSON objects are native javascript
 ```
 
 * Return specific fields of a single record of a type.
-```
+```js
   jsonObject = cmdb.getItemFields(  locals
                                   , type
                                   , key
@@ -174,7 +174,7 @@ All returned JSON arrays and JSON objects are native javascript
 ```
 
 * Return one page of specific fields of records of a type that match an optional criteria. The page size defaults to 50.  You can exclude nested related data.
-```
+```js
   jsonArray = cmdb.getItemPageFields(  locals
                                      , type
                                      , page
@@ -188,11 +188,17 @@ All returned JSON arrays and JSON objects are native javascript
 
 ### Proposed relationship function reference (not implemented yet)
 
-* Return a single relationship 
+* Return a single relationship
+```js
   + jsonObject = cmdb.getRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 12000)
+```
 
 * Create/Update a relationship
+```js
   + jsonObject = cmdb.putRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 12000)
+```
 
 * Delete a relationship
+```js
   + jsonObject = cmdb.deleteRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 12000)
+```

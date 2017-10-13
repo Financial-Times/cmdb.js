@@ -2,28 +2,59 @@
   "name": "cmdb.js",
   "description": "A javascript library for interacting with the CMDB v3",
   "version": "3.0.4",
-  "main": "cmdb.js",
+  "main": "dist/cmdb.js",
+  "browser": "dist/cmdb.browser.js",
+  "module": "dist/cmdb.mjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:browser": "rollup -c rollup.config.browser.js",
+    "build:esmodule": "rollup -c rollup.config.module.js",
+    "build:node": "rollup -c rollup.config.node.js",
+    "build": " npm-run-all --parallel build:**",
+    "prepublishOnly": "del build && npm run build",
+    "lint": "eslint --cache --fix .",
+    "precommit": "lint-staged"
+  },
+  "engines": {
+    "node": ">= 4.3.2"
+  },
+  "lint-staged": {
+    "*.{js,json}": ["eslint --cache --fix", "git add"]
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Financial-Times/cmdb.js.git"
   },
-  "keywords": [
-    "FT",
-    "CMDB"
-  ],
+  "keywords": ["FT", "CMDB"],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Financial-Times/cmdb.js/issues"
   },
-  "homepage": "https://github.com/Financial-Times/cmdb.js#readme",
   "dependencies": {
-    "es6-promise": "^3.2.1",
-    "isomorphic-fetch": "^2.2.1"
+    "fetch-ponyfill": "^4.1.0"
   },
+  "homepage": "https://github.com/Financial-Times/cmdb.js#readme",
   "devDependencies": {
-    "npm-prepublish": "^1.2.0"
+    "@financial-times/eslint-config-de-tooling": "^1.2.1",
+    "babel-core": "^6.26.0",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-env": "^1.6.0",
+    "eslint": "^4.7.2",
+    "eslint-config-prettier": "^2.6.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-mocha": "^4.11.0",
+    "eslint-plugin-prettier": "^2.3.1",
+    "husky": "^0.14.3",
+    "lint-staged": "^4.2.3",
+    "npm-prepublish": "^1.2.0",
+    "npm-run-all": "^4.1.1",
+    "prettier": "^1.7.0",
+    "rollup": "^0.50.0",
+    "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-commonjs": "^8.2.1",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.1.0",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-replace": "^2.0.0"
   }
 }
