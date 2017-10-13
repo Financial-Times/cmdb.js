@@ -1,6 +1,4 @@
 import babel from 'rollup-plugin-babel';
-import cjs from 'rollup-plugin-commonjs';
-import replace from 'rollup-plugin-replace';
 import resolve from 'rollup-plugin-node-resolve';
 import builtins from 'rollup-plugin-node-builtins';
 
@@ -33,9 +31,7 @@ export default {
       ],
       plugins: ['external-helpers']
     }),
-    cjs(),
     builtins(),
-    replace({ 'process.env.NODE_ENV': JSON.stringify('production') }),
     resolve({
       browser: true,
       extensions: ['.js', '.json'],

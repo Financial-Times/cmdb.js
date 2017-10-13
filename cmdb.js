@@ -1,8 +1,5 @@
 import querystring from 'querystring';
-
-const fetchPonyfill = require('fetch-ponyfill');
-
-const { fetch } = fetchPonyfill();
+import fetch from 'unfetch';
 
 /**
  * Object representing the CMDB API
@@ -188,7 +185,7 @@ Cmdb.prototype._fetchAll = function fetchAll(locals, url, timeout = 12000) {
             return response.json();
         })
         .catch(error => {
-            console.log(error);
+            console.error(error);
         });
 };
 
