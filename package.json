@@ -20,19 +20,13 @@
     "node": ">= 4.3.2"
   },
   "lint-staged": {
-    "*.{js,json}": [
-      "eslint --cache --fix",
-      "git add"
-    ]
+    "*.{js,json}": ["eslint --cache --fix", "git add"]
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Financial-Times/cmdb.js.git"
   },
-  "keywords": [
-    "FT",
-    "CMDB"
-  ],
+  "keywords": ["FT", "CMDB"],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Financial-Times/cmdb.js/issues"

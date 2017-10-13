@@ -509,4 +509,4 @@ Cmdb.prototype.putRelationship = function putRelationship(
     return this._fetch(locals, path, undefined, 'POST', {}, timeout);
 };
 
-module.exports = Cmdb;
+export default Cmdb;
