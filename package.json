@@ -14,7 +14,8 @@
     "build": "npm-run-all clean --parallel build:**",
     "prepublishOnly": "npm run build",
     "lint": "eslint --cache --fix .",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "postcommit": "git diff --name-only HEAD^ | xargs git add"
   },
   "engines": {
     "node": ">= 4.3.2"
