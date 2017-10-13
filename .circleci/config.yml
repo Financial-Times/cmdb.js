@@ -101,7 +101,7 @@ workflows:
       - test:
           requires:
             - install_dependencies
-      - deploy:
+      - release:
           requires:
             - test
           filters:
