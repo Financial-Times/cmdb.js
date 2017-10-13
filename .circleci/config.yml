@@ -61,12 +61,12 @@ jobs:
           command: npm install
 
       - *cache_node_modules
-      - *cache_repo
 
   test:
     <<: *container_config
     steps:
       - *restore_repository
+      - *restore_node_modules
 
       - run:
           name: Run linter
@@ -76,6 +76,7 @@ jobs:
     <<: *container_config
     steps:
       - *restore_repository
+      - *restore_node_modules
 
       - *update_npm
 
