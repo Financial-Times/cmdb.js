@@ -17,6 +17,7 @@ const Cmdb = require("cmdb.js");
 const cmdb = new Cmdb({
     api: "https://cmdb.in.ft.com/v3/",
     apikey: process.env.APIKEY,
+    verbose: true
 });
 ```
 

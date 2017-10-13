@@ -6,6 +6,7 @@ import fetch from 'unfetch'
  * @param {Object} [config] - An object of key/value pairs holding configuration
  *   - {string} [api=https://Cmdb.ft.com/v2/] - The CMDB API endpoint to send requests to (defaults to production, change for other environments)
  *   - {string} [apikey=changeme] - The apikey to send to CMDB API
+ *   - {string} [verbose=Boolean] - Whether to enable logging. False by default
  * @constructor
  */
 function Cmdb(config) {
@@ -16,6 +17,12 @@ function Cmdb(config) {
     this.api = config.api || 'https://Cmdb.in.ft.com/v3/'
     if (this.api.slice(-1) !== '/') this.api += '/'
     this.apikey = config.apikey || 'changeme'
+    this.verbose = config.verbose || false
+    this._logger = config.verbose
+        ? console
+        : Object.keys.console.reduce((result, key) =>
+              Object.assign(result, { [key]() {} }, {})
+          )
 }
 
 /**
@@ -185,7 +192,7 @@ Cmdb.prototype._fetchAll = function fetchAll(locals, url, timeout = 12000) {
             return response.json()
         })
         .catch(error => {
-            console.error(error)
+            this._logger.error(error)
         })
 }
 
@@ -461,7 +468,7 @@ Cmdb.prototype.getItemPageFields = function getItemPageFields(
     if (limit) {
         query.limit = limit
     }
-    console.log('getItemPageFields:', querystring.stringify(query))
+    this._logger.log('getItemPageFields:', querystring.stringify(query))
     return this._fetch(
         locals,
         path,
