@@ -21,13 +21,19 @@
     "node": ">= 4.3.2"
   },
   "lint-staged": {
-    "*.{js,json}": ["eslint --cache --fix", "git add"]
+    "*.{js,json}": [
+      "eslint --cache --fix",
+      "git add"
+    ]
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Financial-Times/cmdb.js.git"
   },
-  "keywords": ["FT", "CMDB"],
+  "keywords": [
+    "FT",
+    "CMDB"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Financial-Times/cmdb.js/issues"
@@ -37,12 +43,12 @@
   },
   "homepage": "https://github.com/Financial-Times/cmdb.js#readme",
   "devDependencies": {
-    "@financial-times/eslint-config-de-tooling": "^1.2.1",
+    "@financial-times/eslint-config-de-tooling": "^2.0.0",
     "babel-core": "^6.26.0",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-preset-env": "^1.6.0",
     "del-cli": "^1.1.0",
-    "eslint": "^4.7.2",
+    "eslint": "^4.8.0",
     "eslint-config-prettier": "^2.6.0",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-mocha": "^4.11.0",
