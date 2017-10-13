@@ -104,6 +104,8 @@ workflows:
       - release:
           requires:
             - test
+          branches:
+            ignore: /.*/
           filters:
             tags:
               only: /v.*/
