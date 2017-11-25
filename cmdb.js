@@ -391,4 +391,25 @@ cmdb.prototype.getItemPageFields = function getItemPageFields(locals, type, page
 	});
 };
 
+/**
+ * Updates data about a relationship between two items CMDB.  Can be an existing relationship or a new one.
+ * @param {Object} [locals] - The res.locals value from a request in express
+ * @param {string} subjectType - The source item type for the relationship
+ * @param {string} subjectID - The source item dataItemID for the relationship
+ * @param {string} relType - The relationship type for the relationship
+ * @param {string} objectType - The destination item type for the relationship
+ * @param {string} objectID - The destination item dataItemID for the relationship
+ * @param {number} [timeout=12000] - the optional timeout period in milliseconds
+ * @returns {Promise<Object>} The updated data about the item held in the CMDB
+ */
+cmdb.prototype.putRelationship = function putRelationship(locals, subjectType, subjectID, relType, objectType, objectID, timeout = 12000){
+        var path = 'relationships/' +
+                     encodeURIComponent(subjectType) + '/' +
+                     encodeURIComponent(subjectID) + '/' +
+                     encodeURIComponent(relType) + '/' +
+                     encodeURIComponent(objectType) + '/' +
+                     encodeURIComponent(objectID);
+        return this._fetch(locals, path, undefined, "POST", {}, timeout);
+};
+
 module.exports = cmdb;
