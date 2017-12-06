@@ -146,8 +146,6 @@ cmdb.prototype._fetchAll = function fetchAll(locals, url, timeout = 12000) {
 		} else {
       		return response.json();
       	}
-	}).catch(function(error) {
-		console.log(error)
 	});
 }
 
