@@ -1,7 +1,7 @@
 {
   "name": "cmdb.js",
   "description": "A javascript library for interacting with the CMDB v3",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "main": "cmdb.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
