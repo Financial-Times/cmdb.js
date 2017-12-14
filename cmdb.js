@@ -4,9 +4,9 @@ import fetch from 'unfetch'
 /**
  * Object representing the CMDB API
  * @param {Object} [config] - An object of key/value pairs holding configuration
- *   - {string} [api=https://Cmdb.ft.com/v2/] - The CMDB API endpoint to send requests to (defaults to production, change for other environments)
- *   - {string} [apikey=changeme] - The apikey to send to CMDB API
- *   - {string} [verbose=Boolean] - Whether to enable logging. False by default
+ * @param {string} [config.api=https://Cmdb.ft.com/v2/] - The CMDB API endpoint to send requests to (defaults to production, change for other environments)
+ * @param {string} [config.apikey=changeme] - The apikey to send to CMDB API
+ * @param {boolean} [config.verbose=false] - Whether to enable logging. False by default
  * @constructor
  */
 function Cmdb(config) {
