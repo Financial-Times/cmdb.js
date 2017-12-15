@@ -124,7 +124,7 @@ typings/
 .env
 
 # Build output
-dist
+/dist
 
 ### SublimeText ###
 # cache files for sublime text

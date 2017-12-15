@@ -8,7 +8,7 @@ export default {
     output: {
         file: 'dist/cmdb.browser.js',
         format: 'umd',
-        name: 'cmdb',
+        name: 'Cmdb',
     },
     plugins: [
         babel({

@@ -7,7 +7,9 @@
   "module": "dist/cmdb.mjs",
   "scripts": {
     "clean": "del ./dist",
-    "test": "jest",
+    "test": "jest __tests__/src ",
+    "test:coverage": "npm test -- --coverage",
+    "test:dist": "jest __tests__/dist",
     "build:browser": "rollup -c rollup.config.browser.js",
     "build:esmodule": "rollup -c rollup.config.module.js",
     "build:node": "rollup -c rollup.config.node.js",
@@ -21,7 +23,7 @@
     "node": ">= 4.3.2"
   },
   "lint-staged": {
-    "*.{js,json}": [
+    "*.{js}": [
       "eslint --cache --fix",
       "git add"
     ]
@@ -67,6 +69,7 @@
     "nock": "^9.1.4",
     "npm-run-all": "^4.1.1",
     "prettier": "^1.7.0",
+    "puppeteer": "^0.13.0",
     "rollup": "^0.52.1",
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-commonjs": "^8.2.6",

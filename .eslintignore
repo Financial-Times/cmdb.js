@@ -1,5 +1,8 @@
-dist
+/dist
+
 package-lock.json
 package.json
+
+coverage
 
 .eslintrc.js

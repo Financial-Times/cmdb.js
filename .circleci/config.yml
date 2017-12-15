@@ -4,9 +4,9 @@ references:
 
   container_config: &container_config
     docker:
-      - image: circleci/node:4.8.3
+      - image: circleci/node:8.9.1
     environment:
-      - NPM_VERSION: 5.4.2
+      - NPM_VERSION: 5.5.1
 
   repository_cache_key: &repository_cache_key
     v1-repository-{{ .Branch }}-{{ .Revision }}
@@ -72,17 +72,27 @@ jobs:
           name: Run linter
           command: npm run lint
 
+      - run:
+          name: Run tests
+          command: npm run test:coverage -- --ci
+
+      - store_artifacts:
+          path: coverage
+          destination: /coverage
+
+      - run:
+          name: Build
+          command: npm run build
+
+      - run:
+          name: Run distributable tests
+          command: npm run test:dist -- --ci
+
   release:
     <<: *container_config
     steps:
       - *restore_repository
       - *restore_node_modules
-
-      - *update_npm
-
-      - run:
-          name: Prune devDependencies
-          command: npm prune --production
 
       - deploy:
           command: |

@@ -1,14 +1,8 @@
-import path from 'path'
-import fs from 'fs'
 import babel from 'rollup-plugin-babel'
 import resolve from 'rollup-plugin-node-resolve'
 import builtins from 'rollup-plugin-node-builtins'
 import commonjs from 'rollup-plugin-commonjs'
 import json from 'rollup-plugin-json'
-
-const nodeVersion = fs
-    .readFileSync(path.join(__dirname, '.nvmrc'), 'utf8')
-    .replace(/\s+/, '')
 
 export default {
     input: 'cmdb.js',
@@ -27,7 +21,7 @@ export default {
                         modules: false,
                         useBuiltIns: true,
                         targets: {
-                            node: nodeVersion,
+                            node: '4.3.1',
                         },
                     },
                 ],

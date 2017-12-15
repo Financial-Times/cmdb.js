@@ -1,8 +1,9 @@
 # cmdb.js
-A javascript library for interacting with the CMDB v3 (cmdb v2 is now retired)
+A javascript library for interacting with the CMDB v3 (cmdb v2 is now retired).
+
+Provides versions for the browser, and node.js.
 
 ## Warnings
-* Currently only written for usage server-side (using node.js)
 * Examples (and possibly implementation) biased toward express apps.
 * CMDB v3 is only directly compatible with v3.0.1 and above of this library
 
