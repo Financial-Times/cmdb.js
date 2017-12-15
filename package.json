@@ -17,6 +17,7 @@
     "prepublishOnly": "npm run build",
     "lint": "eslint --cache --fix .",
     "precommit": "lint-staged",
+    "prepush": "npm-run-all test build test:dist",
     "postcommit": "git diff --name-only HEAD^ | xargs git add"
   },
   "engines": {
