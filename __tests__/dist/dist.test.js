@@ -2,7 +2,7 @@ import path from 'path'
 import puppeteer from 'puppeteer'
 import fs from 'fs'
 import http from 'http'
-// eslint-disable-next-line import/extensions
+// eslint-disable-next-line import/extensions,import/no-unresolved
 import Cmdb from '../../dist/cmdb.js'
 
 const port = 3010
@@ -41,7 +41,11 @@ describe('Distributables', () => {
             server = startSimpleServer()
             browser = await puppeteer.launch({
                 headless: true,
-                args: ['--disable-web-security'],
+                args: [
+                    '--disable-web-security',
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                ],
             })
             page = await browser.newPage()
             /* eslint-disable no-console */
