@@ -1,28 +1,67 @@
 import querystring from 'querystring'
-import fetch from 'unfetch'
+import fetch from 'isomorphic-unfetch'
+
+const required = key => {
+    throw new Error(`The config parameter '${key}' is required`)
+}
 
 /**
  * Object representing the CMDB API
  * @param {Object} [config] - An object of key/value pairs holding configuration
  * @param {string} [config.api=https://Cmdb.ft.com/v2/] - The CMDB API endpoint to send requests to (defaults to production, change for other environments)
  * @param {string} [config.apikey=changeme] - The apikey to send to CMDB API
- * @param {boolean} [config.verbose=false] - Whether to enable logging. False by default
+ * @param {boolean} [config.verbose=false] - Whether to enable logging
  * @constructor
  */
-function Cmdb(config) {
+function Cmdb(
+    {
+        api = 'https://Cmdb.in.ft.com/v3/',
+        verbose = false,
+        apikey = required('apikey'),
+    } = {}
+) {
     if (typeof Promise === 'undefined') {
         throw new Error('CMD API requires an environment with Promises')
     }
-    if (typeof config !== 'object') config = {}
-    this.api = config.api || 'https://Cmdb.in.ft.com/v3/'
-    if (this.api.slice(-1) !== '/') this.api += '/'
-    this.apikey = config.apikey || 'changeme'
-    this.verbose = config.verbose || false
-    this._logger = config.verbose
+    this.api = api.slice(-1) !== '/' ? `${api}/` : api
+    this.apikey = apikey
+    this.verbose = verbose
+    this._logger = this.verbose
         ? console
-        : Object.keys.console.reduce((result, key) =>
-              Object.assign(result, { [key]() {} }, {})
+        : Object.keys(console).reduce(
+              (result, key) => Object.assign({}, result, { [key]() {} }),
+              Object.create(null)
           )
+}
+
+/**
+ * Gets parameters to use for a cmdb request using the fetch API
+ * @param {Object} [locals] - The res.locals value from a request in express
+ * @param {Obect} [options] - The options to compute credentials from
+ * @param {string} [options.method] - the request method
+ * @param {Object} [options.body] - the request body to be stringified
+ * @param {number} [options.timeout=12000] - the timeout period in milliseconds
+ * @returns {Object} - the fetch parameters for cmdb
+ */
+Cmdb.prototype._getFetchCredentials = function _getFetchCredentials(
+    locals,
+    { method, body, timeout } = {}
+) {
+    const params = {
+        headers: { apikey: this.apikey, 'x-api-key': this.apikey },
+        timeout,
+    }
+    if (method) {
+        params.method = method
+    }
+    if (body) {
+        params.body = JSON.stringify(body)
+        params.headers['Content-Type'] = 'application/json'
+    }
+    if (locals && locals.s3o_username) {
+        params.headers['FT-Forwarded-Auth'] = `ad:${locals.s3o_username}`
+    }
+    return params
 }
 
 /**
@@ -43,32 +82,19 @@ Cmdb.prototype._fetch = function _fetch(
     body,
     timeout = 12000
 ) {
-    const params = {
-        headers: {
-            apikey: this.apikey,
-            'x-api-key': this.apikey,
-        },
-        timeout,
-    }
-    if (method) params.method = method
-    if (body) {
-        params.body = JSON.stringify(body)
-        params.headers['Content-Type'] = 'application/json'
-    }
-    if (locals && locals.s3o_username) {
-        params.headers['FT-Forwarded-Auth'] = `ad:${locals.s3o_username}`
-    }
-
     // HACK: CMDB decodes paths before they hit its router, so do an extra encode on the whole path here
     // Check for existence of CMDBV3 variable to avoid encoding
     //     if (!process.env.CMDBV3) {
     //      path = encodeURIComponent(path);
     //     }
-    if (query) {
-        path = `${path}?${query}`
+    if (query && Object.keys(query).length > 0) {
+        path = `${path}?${querystring.stringify(query)}`
     }
 
-    return fetch(this.api + path, params).then(response => {
+    return fetch(
+        `${this.api}${path}`,
+        this._getFetchCredentials(locals, { method, body, timeout })
+    ).then(response => {
         if (response.status >= 400) {
             throw new Error(`Received ${response.status} response from CMDB`)
         }
@@ -79,23 +105,25 @@ Cmdb.prototype._fetch = function _fetch(
 /**
  * Helper function for requested count of pages and itemsfrom CMDB API
  * @param {Object} [locals] - The res.locals value from a request in express
- * @param {string} url - The url of the request to make
+ * @param {string} path - The path of the request to make
+ * @param {Object} query - The query parameters to use as a javascript object
  * @param {number} [timeout=12000] - the optional timeout period in milliseconds
  * @returns {Promise<Object>} The count of pages and items from CMDB (JSON-decoded)
  */
-Cmdb.prototype._fetchCount = function fetchCount(locals, url, timeout = 12000) {
-    const self = this
-    const params = {
-        headers: {
-            apikey: self.apikey,
-            'x-api-key': self.apikey,
-        },
-        timeout,
+Cmdb.prototype._fetchCount = function _fetchCount(
+    locals,
+    path,
+    query,
+    timeout = 12000
+) {
+    if (query && Object.keys(query).length > 0) {
+        path = `${path}?${querystring.stringify(query)}`
     }
-    if (locals && locals.s3o_username) {
-        params.headers['FT-Forwarded-Auth'] = `ad:${locals.s3o_username}`
-    }
-    return fetch(url, params).then(response => {
+
+    return fetch(
+        `${this.api}${path}`,
+        this._getFetchCredentials(locals, { timeout })
+    ).then(response => {
         // CMDB returns entirely different output when there are zero contacts
         // Just return an empty array in this case.
         if (response.status === 404) {
@@ -104,22 +132,26 @@ Cmdb.prototype._fetchCount = function fetchCount(locals, url, timeout = 12000) {
         if (response.status !== 200) {
             throw new Error(`Received ${response.status} response from CMDB`)
         }
-        // default page and items count based on a single page containing array of items
-        let pages = 1
-        let items = response.json().length
 
-        // aim to get "Count: Pages: nnn, Items: nnn"
-        const countstext = response.headers.get('Count')
-        if (countstext) {
-            // we now have "Pages: nnn, Items: nnn"
-            const counts = countstext.split(',')
-            if (counts.length === 2) {
-                // we now have "Pages: nnn" and "Items: nnn"
-                pages = Number(counts[0].split(':')[1].trim())
-                items = Number(counts[1].split(':')[1].trim())
+        return response.json().then(body => {
+            // default page and items count based on a single page containing array of items
+
+            let pages = 1
+            let items = body.length
+
+            // aim to get "Count: Pages: nnn, Items: nnn"
+            const countstext = response.headers.get('Count')
+            if (countstext) {
+                // we now have "Pages: nnn, Items: nnn"
+                const counts = countstext.split(',')
+                if (counts.length === 2) {
+                    // we now have "Pages: nnn" and "Items: nnn"
+                    pages = parseInt(counts[0].split(':')[1].trim(), 10)
+                    items = parseInt(counts[1].split(':')[1].trim(), 10)
+                }
             }
-        }
-        return { pages, items }
+            return { pages, items }
+        })
     })
 }
 
@@ -154,22 +186,20 @@ function parseLinkHeader(header) {
  * Recursive helper function for requested paginated lists from CMDB API
  * @param {Object} [locals] - The res.locals value from a request in express
  * @param {string} url - The url of the request to make
+ * @param {Object} query - The query parameters to use as a javascript object
  * @param {number} [timeout=12000] - the optional timeout period in milliseconds
  * @returns {Promise<Object>} The data received from CMDB (JSON-decoded)
  */
-Cmdb.prototype._fetchAll = function fetchAll(locals, url, timeout = 12000) {
-    const self = this
-    const params = {
-        headers: {
-            apikey: self.apikey,
-            'x-api-key': self.apikey,
-        },
-        timeout,
+Cmdb.prototype._fetchAll = function _fetchAll(
+    locals,
+    url,
+    query,
+    timeout = 12000
+) {
+    if (query && Object.keys(query).length > 0) {
+        url = `${url}?${querystring.stringify(query)}`
     }
-    if (locals && locals.s3o_username) {
-        params.headers['FT-Forwarded-Auth'] = `ad:${locals.s3o_username}`
-    }
-    return fetch(url, params)
+    return fetch(url, this._getFetchCredentials(locals, { timeout }))
         .then(response => {
             // CMDB returns entirely different output when there are zero contacts
             // Just return an empty array in this case.
@@ -184,15 +214,17 @@ Cmdb.prototype._fetchAll = function fetchAll(locals, url, timeout = 12000) {
             const links = parseLinkHeader(response.headers.get('link'))
             if (links.next) {
                 return response.json().then(data => {
-                    return self._fetchAll(locals, links.next).then(nextdata => {
-                        return data.concat(nextdata)
-                    })
+                    return this._fetchAll(locals, links.next).then(nextdata => [
+                        ...data,
+                        ...nextdata,
+                    ])
                 })
             }
             return response.json()
         })
         .catch(error => {
             this._logger.error(error)
+            throw error
         })
 }
 
@@ -204,7 +236,12 @@ Cmdb.prototype._fetchAll = function fetchAll(locals, url, timeout = 12000) {
  * @param {number} [timeout=12000] - the optional timeout period in milliseconds
  * @returns {Promise<Object>} The data about the item held in the CMDB
  */
-Cmdb.prototype.getItem = function getItem(locals, type, key, timeout = 12000) {
+Cmdb.prototype.getItem = function getItem(
+    locals,
+    type = required('type'),
+    key = required('key'),
+    timeout = 12000
+) {
     const path = `items/${encodeURIComponent(type)}/${encodeURIComponent(key)}`
     return this._fetch(locals, path, undefined, undefined, undefined, timeout)
 }
@@ -215,14 +252,14 @@ Cmdb.prototype.getItem = function getItem(locals, type, key, timeout = 12000) {
  * @param {string} type - The type of item being requested
  * @param {string} key - The key of the item being requested
  * @param {string} fields - Comma separated list of fields to return
- * @param {string} relatedFields - Whether to included nested relationship information (optional, defaults to True)
- * @param {number} timeout - The timeout limit (optional)
+ * @param {string} [relatedFields] - Whether to included nested relationship information (optional, defaults to True)
+ * @param {number} [timeout=12000] - The timeout limit (optional)
  * @returns {Promise<Object>} The data about the item held in the CMDB
  */
 Cmdb.prototype.getItemFields = function getItemFields(
     locals,
-    type,
-    key,
+    type = required('type'),
+    key = required('key'),
     fields,
     relatedFields,
     timeout = 12000
@@ -235,14 +272,7 @@ Cmdb.prototype.getItemFields = function getItemFields(
     if (relatedFields) {
         query.show_related = relatedFields
     }
-    return this._fetch(
-        locals,
-        path,
-        querystring.stringify(query),
-        undefined,
-        undefined,
-        timeout
-    )
+    return this._fetch(locals, path, query, undefined, undefined, timeout)
 }
 
 /**
@@ -256,9 +286,9 @@ Cmdb.prototype.getItemFields = function getItemFields(
  */
 Cmdb.prototype.putItem = function putItem(
     locals,
-    type,
-    key,
-    body,
+    type = required('type'),
+    key = required('key'),
+    body = required('body'),
     timeout = 12000
 ) {
     const path = `items/${encodeURIComponent(type)}/${encodeURIComponent(key)}`
@@ -275,8 +305,8 @@ Cmdb.prototype.putItem = function putItem(
  */
 Cmdb.prototype.deleteItem = function deleteItem(
     locals,
-    type,
-    key,
+    type = required('type'),
+    key = required('key'),
     timeout = 12000
 ) {
     const path = `items/${encodeURIComponent(type)}/${encodeURIComponent(key)}`
@@ -287,19 +317,19 @@ Cmdb.prototype.deleteItem = function deleteItem(
  * Fetches all the items of a given type from the CMDB
  * @param {Object} [locals] - The res.locals value from a request in express
  * @param {string} type - The type of items to fetch
- * @param {string} criteria - The query parameter(s) to restrict items (optional)
- * @param {number} limit - The number of records to return in one underlying page fetch call (optional)
- * @param {number} timeout - The timeout limit (optional)
+ * @param {string} [criteria] - The query parameter(s) to restrict items (optional)
+ * @param {number} [limit] - The number of records to return in one underlying page fetch call (optional)
+ * @param {number} [timeout=12000] - The timeout limit (optional)
  * @returns {Promise<Array>} A list of objects which have the type specified (NB: This refers to CMDB types, not native javascript types)
  */
 Cmdb.prototype.getAllItems = function getAllItems(
     locals,
-    type,
+    type = required('type'),
     criteria,
     limit,
     timeout = 12000
 ) {
-    let path = `${this.api}items/${encodeURIComponent(type)}`
+    const url = `${this.api}items/${encodeURIComponent(type)}`
     let query = {}
     if (criteria) {
         query = Object.assign(query, criteria)
@@ -307,102 +337,97 @@ Cmdb.prototype.getAllItems = function getAllItems(
     if (limit) {
         query.limit = limit
     }
-    if (query) {
-        path = `${path}?${querystring.stringify(criteria)}`
-    }
-    return this._fetchAll(locals, path, timeout)
+    return this._fetchAll(locals, url, query, timeout)
 }
 
 /**
  * Fetches all the items of a given type from the CMDB
  * @param {Object} [locals] - The res.locals value from a request in express
  * @param {string} type - The type of items to fetch
- * @param {string} fields - The list of fields to retrurn
- * @param {string} criteria - The query parameter(s) to restrict items (optional)
- * @param {string} relatedFields - Whether to included nested relationship information (optional, defaults to True)
- * @param {number} limit - The number of records to return in one underlying page fetch call (optional)
- * @param {number} timeout - The timeout limit (optional)
+ * @param {string} [fields] - The list of fields to return
+ * @param {string} [criteria] - The query parameter(s) to restrict items (optional)
+ * @param {string} [relatedFields] - Whether to included nested relationship information (optional)
+ * @param {number} [limit] - The number of records to return in one underlying page fetch call (optional)
+ * @param {number} [timeout=12000] - The timeout limit (optional)
  * @returns {Promise<Array>} A list of objects which have the type specified (NB: This refers to CMDB types, not native javascript types)
  */
 Cmdb.prototype.getAllItemFields = function getAllItemFields(
     locals,
-    type,
+    type = required('type'),
     fields,
     criteria,
     relatedFields,
     limit,
     timeout = 12000
 ) {
-    let path = `${this.api}items/${encodeURIComponent(type)}`
+    const url = `${this.api}items/${encodeURIComponent(type)}`
     let query = {}
     if (fields) {
         query.outputfields = fields.join(',')
     }
-    if (relatedFields) {
-        query.show_related = relatedFields
-    }
     if (criteria) {
         query = Object.assign(query, criteria)
+    }
+    if (relatedFields) {
+        query.show_related = relatedFields
     }
     if (limit) {
         query.limit = limit
     }
-    if (query) {
-        path = `${path}?${querystring.stringify(query)}`
-    }
-    return this._fetchAll(locals, path, timeout)
+    return this._fetchAll(locals, url, query, timeout)
 }
 
 /**
  * Gets count infomation about a specific type of item in CMDB
  * @param {Object} [locals] - The res.locals value from a request in express
  * @param {string} type - The type of item being requested
- * @param {string} criteria - The query parameter(s) to restrict items (optional)
+ * @param {string} [criteria] - The query parameter(s) to restrict items (optional)
  * @param {number} [timeout=12000] - the optional timeout period in milliseconds
  * @returns {Promise<Object>} The data about the count of items held in the CMDB
  */
 Cmdb.prototype.getItemCount = function getItemCount(
     locals,
-    type,
+    type = required('type'),
     criteria,
     timeout = 12000
 ) {
-    let path = `${this.api}items/${encodeURIComponent(type)}`
-    let query = {}
-    query.page = 1
-    query.outputfields = ''
-    query.show_related = 'False' // don't include related items; we only want a count
+    const path = `items/${encodeURIComponent(type)}`
+    let query = {
+        page: 1,
+        outputfields: '',
+        show_related: 'False', // don't include related items; we only want a count
+    }
 
     if (criteria) {
         query = Object.assign(query, criteria)
     }
-    path = `${path}?${querystring.stringify(query)}`
-    return this._fetchCount(locals, path, timeout)
+    return this._fetchCount(locals, path, query, timeout)
 }
 
 /**
  * Gets data about a specific item in CMDB
  * @param {Object} [locals] - The res.locals value from a request in express
  * @param {string} type - The type of item being requested
- * @param {number} page - The number of the page to return
- * @param {string} criteria - The query parameter(s) to restrict items (optional)
- * @param {string} relatedFields - Whether to included nested relationship information (optional, defaults to True)
- * @param {number} limit - The number of records to return in one underlying page fetch call (optional)
- * @param {number} timeout - The timeout limit (optional)
+ * @param {number} [page=1] - The number of the page to return
+ * @param {string} [criteria] - The query parameter(s) to restrict items (optional)
+ * @param {string} [relatedFields] - Whether to included nested relationship information (optional, defaults to True)
+ * @param {number} [limit] - The number of records to return in one underlying page fetch call (optional)
+ * @param {number} [timeout] - The timeout limit (optional)
  * @returns {Promise<Object>} The data about the item held in the CMDB
  */
 Cmdb.prototype.getItemPage = function getItemPage(
     locals,
-    type,
+    type = required('type'),
     page = 1,
     criteria,
     relatedFields,
     limit,
     timeout = 12000
 ) {
-    let query = {}
+    let query = {
+        page,
+    }
     const path = `items/${encodeURIComponent(type)}`
-    query.page = page
     if (relatedFields) {
         query.show_related = relatedFields
     }
@@ -415,37 +440,30 @@ Cmdb.prototype.getItemPage = function getItemPage(
     return this._fetch(
         locals,
         path,
-        querystring.stringify(query),
+        query,
         undefined,
         undefined,
         timeout
-    )
-        .then(response => {
-            return response
-        })
-        .catch(error => {
-            if (error.toString().includes(' 404 ')) {
-                // no details available but thats not a surprise
-            }
-            return []
-        })
+    ).catch(() => {
+        return []
+    })
 }
 
 /**
  * Gets data about a specific item in CMDB
  * @param {Object} [locals] - The res.locals value from a request in express
  * @param {string} type - The type of item being requested
- * @param {number} page - The number of the page to return
- * @param {string} fields - Comma separated list of fields to return
- * @param {string} criteria - The query parameter(s) to restrict items (optional)
- * @param {string} relatedFields - Whether to included nested relationship information (optional, defaults to True)
- * @param {number} limit - The number of records to return in one underlying page fetch call (optional)
- * @param {number} timeout - The timeout limit (optional)
+ * @param {number} [page] - The number of the page to return (optional)
+ * @param {string} [fields] - Comma separated list of fields to return (optional)
+ * @param {string} [criteria] - The query parameter(s) to restrict items (optional)
+ * @param {string} [relatedFields] - Whether to included nested relationship information (optional, defaults to True)
+ * @param {number} [limit] - The number of records to return in one underlying page fetch call (optional)
+ * @param {number} [timeout=12000] - The timeout limit (optional)
  * @returns {Promise<Object>} The data about the item held in the CMDB
  */
 Cmdb.prototype.getItemPageFields = function getItemPageFields(
     locals,
-    type,
+    type = required('type'),
     page = 1,
     fields,
     criteria,
@@ -454,8 +472,9 @@ Cmdb.prototype.getItemPageFields = function getItemPageFields(
     timeout = 12000
 ) {
     const path = `items/${encodeURIComponent(type)}`
-    let query = {}
-    query.page = page
+    let query = {
+        page,
+    }
     if (fields) {
         query.outputfields = fields.join(',')
     }
@@ -472,20 +491,13 @@ Cmdb.prototype.getItemPageFields = function getItemPageFields(
     return this._fetch(
         locals,
         path,
-        querystring.stringify(query),
+        query,
         undefined,
         undefined,
         timeout
-    )
-        .then(response => {
-            return response
-        })
-        .catch(error => {
-            if (error.toString().includes(' 404 ')) {
-                // no details available but thats not a surprise
-            }
-            return []
-        })
+    ).catch(() => {
+        return []
+    })
 }
 
 /**

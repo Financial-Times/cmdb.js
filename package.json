@@ -7,7 +7,7 @@
   "module": "dist/cmdb.mjs",
   "scripts": {
     "clean": "del ./dist",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build:browser": "rollup -c rollup.config.browser.js",
     "build:esmodule": "rollup -c rollup.config.module.js",
     "build:node": "rollup -c rollup.config.node.js",
@@ -26,6 +26,12 @@
       "git add"
     ]
   },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      ".eslintrc"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Financial-Times/cmdb.js.git"
@@ -39,26 +45,32 @@
     "url": "https://github.com/Financial-Times/cmdb.js/issues"
   },
   "dependencies": {
-    "unfetch": "^3.0.0"
+    "isomorphic-unfetch": "^2.0.0"
   },
   "homepage": "https://github.com/Financial-Times/cmdb.js#readme",
   "devDependencies": {
     "@financial-times/eslint-config-de-tooling": "^2.0.2",
     "babel-core": "^6.26.0",
+    "babel-jest": "^21.2.0",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-preset-env": "^1.6.0",
     "del-cli": "^1.1.0",
     "eslint": "^4.8.0",
     "eslint-config-prettier": "^2.6.0",
     "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jest": "^21.4.2",
     "eslint-plugin-mocha": "^4.11.0",
     "eslint-plugin-prettier": "^2.3.1",
     "husky": "^0.14.3",
-    "lint-staged": "^4.2.3",
+    "jest": "^21.2.1",
+    "lint-staged": "^6.0.0",
+    "nock": "^9.1.4",
     "npm-run-all": "^4.1.1",
     "prettier": "^1.7.0",
-    "rollup": "^0.50.0",
+    "rollup": "^0.52.1",
     "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-commonjs": "^8.2.6",
+    "rollup-plugin-json": "^2.3.0",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.1.0",
     "rollup-plugin-node-resolve": "^3.0.0"

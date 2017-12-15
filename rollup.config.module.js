@@ -1,6 +1,7 @@
 import babel from 'rollup-plugin-babel'
 import resolve from 'rollup-plugin-node-resolve'
 import builtins from 'rollup-plugin-node-builtins'
+import commonjs from 'rollup-plugin-commonjs'
 
 export default {
     input: 'cmdb.js',
@@ -31,6 +32,7 @@ export default {
             ],
             plugins: ['external-helpers'],
         }),
+        commonjs(),
         builtins(),
         resolve({
             browser: true,

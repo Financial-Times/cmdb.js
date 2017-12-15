@@ -1,6 +1,7 @@
 import babel from 'rollup-plugin-babel'
 import resolve from 'rollup-plugin-node-resolve'
 import builtins from 'rollup-plugin-node-builtins'
+import commonjs from 'rollup-plugin-commonjs'
 
 export default {
     input: 'cmdb.js',
@@ -28,6 +29,7 @@ export default {
                     },
                 ],
             ],
+            exclude: 'node_modules/**',
             plugins: ['external-helpers'],
         }),
         builtins(),
@@ -36,6 +38,7 @@ export default {
             extensions: ['.js', '.json'],
             preferBuiltins: false,
         }),
+        commonjs(),
     ],
     sourcemap: true,
 }
