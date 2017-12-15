@@ -513,11 +513,11 @@ Cmdb.prototype.getItemPageFields = function getItemPageFields(
  */
 Cmdb.prototype.putRelationship = function putRelationship(
     locals,
-    subjectType,
-    subjectID,
-    relType,
-    objectType,
-    objectID,
+    subjectType = required('subjectType'),
+    subjectID = required('subjectID'),
+    relType = required('relType'),
+    objectType = required('objectType'),
+    objectID = required('objectID'),
     timeout = 12000
 ) {
     const path = `relationships/${encodeURIComponent(

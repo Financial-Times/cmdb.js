@@ -1315,3 +1315,19 @@ Object {
   "troubleshooting": "<table class=\\"table table-bordered\\" width=\\"100%\\"><tbody><tr><th scope=\\"row\\">Step 1</th><td><b>Has pingdom fired an alert showing CMDBv2 as down?</b><br><br>a. If in-hours contact the OI team using the contact details above.</td></tr><tr><th scope=\\"row\\">Step 2</th><td><p><b>Is dewey.ft.com showing an empty index page?</b><br><br>a. If in-hours contact the OI team using the contact details above.<br>b. If a Dewey system page needs to be accessed urgently, perform the following actions:<br>&nbsp; i. &nbsp; Log into AWS via awslogin.in.ft.com<br>&nbsp; ii. &nbsp;Select S3 and navigate to dewey-library-prod<br>&nbsp; iii. Open up the html page (based on system name) required - search facilities are limited compared to dewey.ft.com</p></td></tr><tr><th scope=\\"row\\">Step 3</th><td><b>Are Dewey system pages not updating in a timely fashion following an update?</b><br><br>a. If in-hours contact the OI team using the contact details above.<br>b. If a Dewey system pages needs to be urgently accessed, perform the following actions:<br>&nbsp; i. &nbsp; Try accessing the details via https://systemregistry.in.ft.com/manage/&lt;system-code&gt;<br>&nbsp; ii. &nbsp;Try accessing the html page directly in the S3 bucket (using the steps shown above)<br>&nbsp; iii. If you have access, purge the Dewey system page's cache via the akamai fast purge console&nbsp;</td></tr></tbody></table>",
 }
 `;
+
+exports[`putRelationships should return the cmdb response 1`] = `
+Array [
+  Object {
+    "id": 955,
+    "lastUpdate": "2017-04-26T01:36:08.952Z",
+    "objectID": "ashleydesouza",
+    "objectKey_id": 522,
+    "objectType_id": "contact",
+    "relationshipType_id": "productOwner",
+    "subjectID": "dewey",
+    "subjectKey_id": 527,
+    "subjectType_id": "system",
+  },
+]
+`;

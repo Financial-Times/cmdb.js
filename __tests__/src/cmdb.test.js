@@ -2,6 +2,7 @@ import nock from 'nock'
 import Cmdb from '../../cmdb'
 import itemFixture from './fixtures/item.json'
 import itemsFixture from './fixtures/items.json'
+import relationshipsFixture from './fixtures/relationships.json'
 
 const defaultApi = 'https://Cmdb.in.ft.com/v3/'
 const stubType = 'system'
@@ -444,6 +445,137 @@ describe('getItemPageFields', () => {
 
         await expect(
             createCmdb().getItemPageFields(stubLocals, stubType)
+        ).resolves.toMatchSnapshot()
+    })
+})
+
+describe('putRelationships', () => {
+    const dummySubjectType = 'system'
+    const dummySubjectID = 'dewey'
+    const dummyRelType = 'primaryContactFor'
+    const dummyObjectType = 'contact'
+    const dummyObjectID = 'someone'
+
+    const setupPutRelationship = (
+        subjectType,
+        subjectID,
+        relType,
+        objectType,
+        objectID,
+        [statusCode, response] = [200, relationshipsFixture]
+    ) => {
+        const baseNockStub = createBaseNockStubWithCors()
+        return baseNockStub
+            .post(
+                `/relationships/${encodeURIComponent(
+                    subjectType
+                )}/${encodeURIComponent(subjectID)}/${encodeURIComponent(
+                    relType
+                )}/${encodeURIComponent(objectType)}/${encodeURIComponent(
+                    objectID
+                )}`
+            )
+            .query(true)
+            .reply(statusCode, JSON.stringify(response))
+    }
+
+    test('should require subjectType', async () => {
+        expect.assertions(1)
+
+        await expect(() =>
+            createCmdb().putRelationship(stubLocals, undefined)
+        ).toThrow("The config parameter 'subjectType' is required")
+    })
+
+    test('should require subjectID', async () => {
+        expect.assertions(1)
+
+        await expect(() =>
+            createCmdb().putRelationship(stubLocals, dummySubjectType)
+        ).toThrow("The config parameter 'subjectID' is required")
+    })
+
+    test('should require relType', async () => {
+        expect.assertions(1)
+
+        await expect(() =>
+            createCmdb().putRelationship(
+                stubLocals,
+                dummySubjectType,
+                dummySubjectID
+            )
+        ).toThrow("The config parameter 'relType' is required")
+    })
+
+    test('should require objectType', async () => {
+        expect.assertions(1)
+
+        await expect(() =>
+            createCmdb().putRelationship(
+                stubLocals,
+                dummySubjectType,
+                dummySubjectID,
+                dummyObjectType
+            )
+        ).toThrow("The config parameter 'objectType' is required")
+    })
+
+    test('should require objectID', async () => {
+        expect.assertions(1)
+
+        await expect(() =>
+            createCmdb().putRelationship(
+                stubLocals,
+                dummySubjectType,
+                dummySubjectID,
+                dummyRelType,
+                dummyObjectType
+            )
+        ).toThrow("The config parameter 'objectID' is required")
+    })
+
+    test('should call the correct endpoint', async () => {
+        expect.assertions(1)
+        const stubHttp = setupPutRelationship(
+            dummySubjectType,
+            dummySubjectID,
+            dummyRelType,
+            dummyObjectType,
+            dummyObjectID
+        )
+
+        try {
+            await createCmdb().putRelationship(
+                stubLocals,
+                dummySubjectType,
+                dummySubjectID,
+                dummyRelType,
+                dummyObjectType,
+                dummyObjectID
+            )
+        } finally {
+            expect(stubHttp.isDone()).toBeTruthy()
+        }
+    })
+    test('should return the cmdb response', async () => {
+        expect.assertions(1)
+        setupPutRelationship(
+            dummySubjectType,
+            dummySubjectID,
+            dummyRelType,
+            dummyObjectType,
+            dummyObjectID
+        )
+
+        await expect(
+            createCmdb().putRelationship(
+                stubLocals,
+                dummySubjectType,
+                dummySubjectID,
+                dummyRelType,
+                dummyObjectType,
+                dummyObjectID
+            )
         ).resolves.toMatchSnapshot()
     })
 })
