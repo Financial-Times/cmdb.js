@@ -1,5 +1,6 @@
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
+const https = require('https');
 const querystring = require('querystring');
 
 /**
@@ -122,6 +123,7 @@ cmdb.prototype._fetchAll = function fetchAll(locals, url, timeout = 12000) {
 			"x-api-key": self.apikey
 		},
 		timeout: timeout,
+		agent: new https.Agent({ keepAlive: true })
 	}
 	if (locals && locals.s3o_username) {
 		params.headers['FT-Forwarded-Auth'] = "ad:"+ locals.s3o_username;
