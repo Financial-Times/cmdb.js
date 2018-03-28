@@ -9,8 +9,8 @@ export default {
     output: {
         file: 'dist/cmdb.js',
         format: 'cjs',
+        sourcemap: 'inline',
     },
-    sourcemap: 'inline',
     plugins: [
         babel({
             babelrc: false,

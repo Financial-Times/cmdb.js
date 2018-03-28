@@ -30,13 +30,13 @@ const stubCorsPreFlight = () =>
         .reply(200)
 
 const stubItemResponse = (
-    { method = 'get', responseHeaders = {}, body } = {},
+    { verb = 'get', responseHeaders = {}, body } = {},
     type,
     key,
     [statusCode, response] = [200, itemFixture]
 ) => {
     const baseNockStub = createBaseNockStubWithCors()
-    return baseNockStub[method](
+    return baseNockStub[verb](
         `/items/${encodeURIComponent(type)}/${encodeURIComponent(key)}`,
         body
     )
@@ -45,7 +45,7 @@ const stubItemResponse = (
 }
 
 const stubItemsResponse = (
-    { method = 'get', responseHeaders = {}, body } = {},
+    { verb = 'get', responseHeaders = {}, body } = {},
     type,
     [statusCode, response] = [200, itemsFixture]
 ) => {
@@ -57,10 +57,33 @@ const stubItemsResponse = (
         responseHeaders
     )
     const baseNockStub = createBaseNockStubWithCors()
-    return baseNockStub[method](`/items/${encodeURIComponent(type)}`, body)
+    return baseNockStub[verb](`/items/${encodeURIComponent(type)}`, body)
         .query(true)
         .reply(statusCode, JSON.stringify(response), mergedResponseHeaders)
 }
+
+const stubRelationshipsResponse = (
+    {verb, responseHeaders = {}} = {},
+            subjectType,
+            subjectID,
+            relType,
+            objectType,
+            objectID,
+            [statusCode, response] = [200, relationshipsFixture]
+        ) => {
+            const baseNockStub = createBaseNockStubWithCors()
+            return baseNockStub[verb](
+                `/relationships/${encodeURIComponent(
+                    subjectType
+                )}/${encodeURIComponent(subjectID)}/${encodeURIComponent(
+                    relType
+                )}/${encodeURIComponent(objectType)}/${encodeURIComponent(
+                    objectID
+                )}`
+            )
+                .query(true)
+                .reply(statusCode, JSON.stringify(response))
+        }
 
 beforeEach(() => {
     stubCorsPreFlight()
@@ -183,7 +206,7 @@ describe('getItemFields', () => {
 describe('putItem', () => {
     const dummyBody = {}
     const setupPutItem = (...args) =>
-        stubItemResponse({ method: 'put' }, ...args)
+        stubItemResponse({ verb: 'put' }, ...args)
 
     test('should require type', async () => {
         expect.assertions(1)
@@ -241,7 +264,7 @@ describe('putItem', () => {
 
 describe('deleteItem', () => {
     const setupDeleteItem = (...args) =>
-        stubItemResponse({ method: 'delete' }, ...args)
+        stubItemResponse({ verb: 'delete' }, ...args)
 
     test('should require type', async () => {
         expect.assertions(1)
@@ -448,134 +471,114 @@ describe('getItemPageFields', () => {
         ).resolves.toMatchSnapshot()
     })
 })
+;[
+    { method: 'putRelationship', verb: 'post' },
+    { method: 'getRelationship', verb: 'get' },
+    { method: 'deleteRelationship', verb: 'delete' },
+].forEach(({ method, verb }) => {
+    describe(method, () => {
+        const dummySubjectType = 'system'
+        const dummySubjectID = 'dewey'
+        const dummyRelType = 'primaryContactFor'
+        const dummyObjectType = 'contact'
+        const dummyObjectID = 'someone'
 
-describe('putRelationships', () => {
-    const dummySubjectType = 'system'
-    const dummySubjectID = 'dewey'
-    const dummyRelType = 'primaryContactFor'
-    const dummyObjectType = 'contact'
-    const dummyObjectID = 'someone'
+        test('should require subjectType', async () => {
+            expect.assertions(1)
 
-    const setupPutRelationship = (
-        subjectType,
-        subjectID,
-        relType,
-        objectType,
-        objectID,
-        [statusCode, response] = [200, relationshipsFixture]
-    ) => {
-        const baseNockStub = createBaseNockStubWithCors()
-        return baseNockStub
-            .post(
-                `/relationships/${encodeURIComponent(
-                    subjectType
-                )}/${encodeURIComponent(subjectID)}/${encodeURIComponent(
-                    relType
-                )}/${encodeURIComponent(objectType)}/${encodeURIComponent(
-                    objectID
-                )}`
-            )
-            .query(true)
-            .reply(statusCode, JSON.stringify(response))
-    }
+            await expect(() =>
+                createCmdb()[method](stubLocals, undefined)
+            ).toThrow("The config parameter 'subjectType' is required")
+        })
 
-    test('should require subjectType', async () => {
-        expect.assertions(1)
+        test('should require subjectID', async () => {
+            expect.assertions(1)
 
-        await expect(() =>
-            createCmdb().putRelationship(stubLocals, undefined)
-        ).toThrow("The config parameter 'subjectType' is required")
-    })
+            await expect(() =>
+                createCmdb()[method](stubLocals, dummySubjectType)
+            ).toThrow("The config parameter 'subjectID' is required")
+        })
 
-    test('should require subjectID', async () => {
-        expect.assertions(1)
+        test('should require relType', async () => {
+            expect.assertions(1)
 
-        await expect(() =>
-            createCmdb().putRelationship(stubLocals, dummySubjectType)
-        ).toThrow("The config parameter 'subjectID' is required")
-    })
+            await expect(() =>
+                createCmdb()[method](stubLocals, dummySubjectType, dummySubjectID)
+            ).toThrow("The config parameter 'relType' is required")
+        })
 
-    test('should require relType', async () => {
-        expect.assertions(1)
+        test('should require objectType', async () => {
+            expect.assertions(1)
 
-        await expect(() =>
-            createCmdb().putRelationship(
-                stubLocals,
-                dummySubjectType,
-                dummySubjectID
-            )
-        ).toThrow("The config parameter 'relType' is required")
-    })
+            await expect(() =>
+                createCmdb()[method](
+                    stubLocals,
+                    dummySubjectType,
+                    dummySubjectID,
+                    dummyObjectType
+                )
+            ).toThrow("The config parameter 'objectType' is required")
+        })
 
-    test('should require objectType', async () => {
-        expect.assertions(1)
+        test('should require objectID', async () => {
+            expect.assertions(1)
 
-        await expect(() =>
-            createCmdb().putRelationship(
-                stubLocals,
-                dummySubjectType,
-                dummySubjectID,
-                dummyObjectType
-            )
-        ).toThrow("The config parameter 'objectType' is required")
-    })
+            await expect(() =>
+                createCmdb()[method](
+                    stubLocals,
+                    dummySubjectType,
+                    dummySubjectID,
+                    dummyRelType,
+                    dummyObjectType
+                )
+            ).toThrow("The config parameter 'objectID' is required")
+        })
 
-    test('should require objectID', async () => {
-        expect.assertions(1)
-
-        await expect(() =>
-            createCmdb().putRelationship(
-                stubLocals,
-                dummySubjectType,
-                dummySubjectID,
-                dummyRelType,
-                dummyObjectType
-            )
-        ).toThrow("The config parameter 'objectID' is required")
-    })
-
-    test('should call the correct endpoint', async () => {
-        expect.assertions(1)
-        const stubHttp = setupPutRelationship(
-            dummySubjectType,
-            dummySubjectID,
-            dummyRelType,
-            dummyObjectType,
-            dummyObjectID
-        )
-
-        try {
-            await createCmdb().putRelationship(
-                stubLocals,
+        test('should call the correct endpoint', async () => {
+            expect.assertions(1)
+            const stubHttp = stubRelationshipsResponse(
+                {verb},
                 dummySubjectType,
                 dummySubjectID,
                 dummyRelType,
                 dummyObjectType,
                 dummyObjectID
             )
-        } finally {
-            expect(stubHttp.isDone()).toBeTruthy()
-        }
-    })
-    test('should return the cmdb response', async () => {
-        expect.assertions(1)
-        setupPutRelationship(
-            dummySubjectType,
-            dummySubjectID,
-            dummyRelType,
-            dummyObjectType,
-            dummyObjectID
-        )
 
-        await expect(
-            createCmdb().putRelationship(
-                stubLocals,
+            try {
+                await createCmdb()[method](
+                    stubLocals,
+                    dummySubjectType,
+                    dummySubjectID,
+                    dummyRelType,
+                    dummyObjectType,
+                    dummyObjectID
+                )
+            } finally {
+                expect(stubHttp.isDone()).toBeTruthy()
+            }
+        })
+        test('should return the cmdb response', async () => {
+            expect.assertions(1)
+            stubRelationshipsResponse(
+                {verb},
                 dummySubjectType,
                 dummySubjectID,
                 dummyRelType,
                 dummyObjectType,
                 dummyObjectID
             )
-        ).resolves.toMatchSnapshot()
+
+            await expect(
+                createCmdb()[method](
+                    stubLocals,
+                    dummySubjectType,
+                    dummySubjectID,
+                    dummyRelType,
+                    dummyObjectType,
+                    dummyObjectID
+                )
+            ).resolves.toMatchSnapshot()
+        })
     })
 })

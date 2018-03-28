@@ -41,11 +41,7 @@ describe('Distributables', () => {
             server = startSimpleServer()
             browser = await puppeteer.launch({
                 headless: true,
-                args: [
-                    '--disable-web-security',
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                ],
+                args: ['--no-sandbox', '--disable-setuid-sandbox'],
             })
             page = await browser.newPage()
             /* eslint-disable no-console */
@@ -81,7 +77,7 @@ describe('Distributables', () => {
         })
     })
 
-    test('node module', () => {
+    test('Node module', () => {
         expect.assertions(1)
 
         expect(new Cmdb({ apikey: 'stubKey' })).toBeInstanceOf(Object)

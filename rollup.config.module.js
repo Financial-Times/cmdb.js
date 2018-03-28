@@ -8,6 +8,7 @@ export default {
     output: {
         file: 'dist/cmdb.mjs',
         format: 'es',
+        sourcemap: true,
     },
     plugins: [
         babel({
@@ -40,5 +41,4 @@ export default {
             preferBuiltins: false,
         }),
     ],
-    sourcemap: true,
 }

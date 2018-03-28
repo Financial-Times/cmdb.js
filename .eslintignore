@@ -1,4 +1,6 @@
 /dist
+/docs
+/out
 
 package-lock.json
 package.json

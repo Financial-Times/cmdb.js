@@ -9,6 +9,7 @@ export default {
         file: 'dist/cmdb.browser.js',
         format: 'umd',
         name: 'Cmdb',
+        sourcemap: true,
     },
     plugins: [
         babel({
@@ -40,5 +41,4 @@ export default {
         }),
         commonjs(),
     ],
-    sourcemap: true,
 }

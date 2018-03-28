@@ -166,4 +166,7 @@ GitHub.sublime-settings
 !.vscode/extensions.json
 .history
 
+## jsdoc
+out/
+
 # End of https://www.gitignore.io/api/node,intellij,sublimetext,visualstudiocode
