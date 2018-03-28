@@ -33,12 +33,12 @@ export default {
             exclude: 'node_modules/**',
             plugins: ['external-helpers'],
         }),
+        commonjs(),
         builtins(),
         resolve({
             browser: true,
             extensions: ['.js', '.json'],
             preferBuiltins: false,
         }),
-        commonjs(),
     ],
 }

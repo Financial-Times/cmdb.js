@@ -123,3 +123,9 @@ npm install`
 ```
 
 Linting and tests are ran on precommit and prepush respectively, otherwise view npm scripts using `npm run`.
+
+### Distributables
+
+* UMD: Designed for nodejs > 4.3.1, does not include node builtins, transpiled down to node 4. Uses node-fetch
+* ESM: .mjs format, uses unfetch
+* browser: UMD format, uses unfetch

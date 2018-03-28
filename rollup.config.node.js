@@ -1,6 +1,5 @@
 import babel from 'rollup-plugin-babel'
 import resolve from 'rollup-plugin-node-resolve'
-import builtins from 'rollup-plugin-node-builtins'
 import commonjs from 'rollup-plugin-commonjs'
 import json from 'rollup-plugin-json'
 
@@ -11,6 +10,17 @@ export default {
         format: 'cjs',
         sourcemap: 'inline',
     },
+    external: [
+        'buffer',
+        'http',
+        'https',
+        'querystring',
+        'stream',
+        'string_decoder',
+        'url',
+        'util',
+        'zlib'
+    ],
     plugins: [
         babel({
             babelrc: false,
@@ -33,10 +43,10 @@ export default {
         // Needed for a node-fetch dependency
         json(),
         commonjs(),
-        builtins(),
         resolve({
             browser: false,
             extensions: ['.js', '.json'],
+            preferBuiltins: true
         }),
     ],
 }
