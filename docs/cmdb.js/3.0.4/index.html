@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Home - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Cmdb.html">Cmdb</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#deleteItem">deleteItem</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#deleteRelationship">deleteRelationship</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getAllItemFields">getAllItemFields</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getAllItems">getAllItems</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getItem">getItem</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getItemCount">getItemCount</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getItemFields">getItemFields</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getItemPage">getItemPage</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getItemPageFields">getItemPageFields</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getRelationship">getRelationship</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#putItem">putItem</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#putRelationship">putRelationship</a></span></li>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><h1>cmdb.js</h1><p>A javascript library for interacting with the CMDB v3 (cmdb v2 is now retired).</p>
+<p>Provides versions for the browser, and node.js.</p>
+<h2>Warnings</h2><ul>
+<li>Examples (and possibly implementation) biased toward express apps.</li>
+<li>CMDB v3 is only directly compatible with v3.0.1 and above of this library</li>
+</ul>
+<p>Pull requests welcomed.</p>
+<h2>Usage</h2><h3>Inital Setup</h3><p>Pass in your apikey to the library to authenticate requests:</p>
+<pre class="prettyprint source lang-js"><code>const Cmdb = require(&quot;cmdb.js&quot;);
+const cmdb = new Cmdb({
+    api: &quot;https://cmdb.in.ft.com/v3/&quot;,
+    apikey: process.env.APIKEY,
+    verbose: true
+});</code></pre><p>If you're playing with test or development data, you should point the library to a test environment, to avoid corrupting production:</p>
+<pre class="prettyprint source lang-js"><code>const Cmdb = require(&quot;cmdb.js&quot;);
+const cmdb = new Cmdb({
+    api: &quot;https://cmdb-test.in.ft.com/v3/&quot;,
+    apikey: process.env.APIKEY,
+});</code></pre><h3>Getting information about a system</h3><p>Once you've setup the class with an apikey, you can get information about a given system by passing in the type 'system' and relevant system code into <code>getItem</code>:</p>
+<pre class="prettyprint source lang-js"><code>const systemCode = 'ft-dashing';
+cmdb.getItem(null, 'system', systemCode).then((result) => {
+    console.log(result);
+}).catch((error) => {
+    console.error('an error occured')
+});</code></pre><p>You can also create/update and delete items, using <code>putItem</code> and <code>deleteItem</code> in a similar fashion.</p>
+<h3>Getting a list of systems</h3><p>To get a list of all the systems currently listed in CMDB, pass the type 'system' into <code>getAllItems</code>:</p>
+<pre class="prettyprint source lang-js"><code>cmdb.getAllItems(null, 'systems').then((body) => {
+    body.forEach((contact) => {
+        console.log(contact);
+    });
+});</code></pre><p><strong>Beware, calls to getAllItems can attempt to return a large amount of data</strong> -
+and therefore timeout. A better approach is to refine your request to focus on the actual data you require. For example:</p>
+<ul>
+<li>restrict the output by a search criteria</li>
+<li>reduce the set of fields being returned</li>
+<li>only return a page of data</li>
+<li>all the above!</li>
+</ul>
+<p>See the <strong>Function Reference</strong> below for more details on these targeted requests.</p>
+<h3>Integrating with s3o-middleware</h3><p>If changes made by your system are triggered by another user or system, it is recommended that the upstream user is sent to the CMDB using the <a href="https://docs.google.com/document/d/1ecw40CoWSOHFhq8xco5jyq5tBfdqWzH3BXiMCTKVkLw/edit#">FT-Forwarded-Auth</a> header.  This allows for fine-grained reports to be created centrally, which may be necessary in the event of a security incident.</p>
+<p>If you're using the <a href="https://github.com/Financial-Times/s3o-middleware/">s3o-middleware</a> module, you can handle this automatically by passing res.locals into each call made by this library.  For example:</p>
+<pre class="prettyprint source lang-js"><code>const express = require('express');
+const app = express();
+const authS3O = require('s3o-middleware');
+app.use(authS3O);
+const Cmdb = require(&quot;cmdb.js&quot;);
+const cmdb = new Cmdb({
+    apikey: process.env.APIKEY,
+});
+
+app.post('/contacts/:contactid', function (req, res) {
+    cmdb.putItem(res.locals, 'contact', req.params.contactid, req.body).then((result) => {
+        res.render('contact', result);
+    });
+});</code></pre><h3>Item function reference</h3><p>Via the use of optional parameters and dedicated functions it is possible to retrieve anything from a single field on a single record to all fields on all records. Selection criteria and response timeouts may also be specified.  BEWARE there is an ongoing discussion re how the underlying fetch() function handles timeouts.</p>
+<p>The criteria parameter defines the query string to use to restrict the number of records that are returned. It expects an object of name/value pairs. A blank value for a name indicates a query for records that dont include the name as an attribute. Values can include wildcard characters of * and ?</p>
+<p>The fields parameter defines which fields are to be output for each record. It expects an array of field names. Note that dataItemID, dataTypeID and lastUpdate will always be output.</p>
+<p>The relatedFields parameter indicates if nested related item data is to be outout. If set to false then performance is improved at the expense of detail; no related items are shown just the item itself.</p>
+<p>All returned JSON arrays and JSON objects are native javascript</p></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Wed Mar 28 2018 14:10:38 GMT+0100 (BST) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

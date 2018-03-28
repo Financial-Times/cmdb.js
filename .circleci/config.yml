@@ -5,7 +5,7 @@ references:
   container_config: &container_config
     working_directory: ~/project/cmdb.js
     docker:
-      - image: circleci/node:8.9.1
+      - image: circleci/node:8.10.0
 
   workspace_root: &workspace_root
     ~/project
@@ -67,11 +67,24 @@ jobs:
           name: Build
           command: npm run build
 
-      # Skip for now due to issues running puppeteer on docker based CI
+      # Required for pupeteer on docker based CI
       # https://github.com/GoogleChrome/puppeteer/issues/290
-      # - run:
-      #     name: Run distributable tests
-      #     command: npm run test:dist -- --ci
+      - run:
+          name: Prep distributable tests
+          command: |
+            apt-get update && \
+            apt-get install -yq \
+            gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 \
+            libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 \
+            libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 \
+            libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 \
+            libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 \
+            libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates \
+            fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
+
+      - run:
+          name: Run distributable tests
+          command: npm run test:dist -- --ci
 
   release:
     <<: *container_config
