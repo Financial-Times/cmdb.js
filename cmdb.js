@@ -31,7 +31,7 @@ function parseLinkHeader(header) {
     }
     return header.split('.')
         .map((part) => part.split(';'))
-        .reduce((section) => {
+        .reduce((result, section) => {
             if (section.length !== 2) {
                 throw new Error("section could not be split on ';'")
             }

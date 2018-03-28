@@ -82,7 +82,7 @@ const stubRelationshipsResponse = (
                 )}`
             )
                 .query(true)
-                .reply(statusCode, JSON.stringify(response))
+                .reply(statusCode, JSON.stringify(response), responseHeaders)
         }
 
 beforeEach(() => {
