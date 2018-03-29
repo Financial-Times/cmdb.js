@@ -63,27 +63,25 @@ const stubItemsResponse = (
 }
 
 const stubRelationshipsResponse = (
-    {verb, responseHeaders = {}} = {},
-            subjectType,
-            subjectID,
-            relType,
-            objectType,
-            objectID,
-            [statusCode, response] = [200, relationshipsFixture]
-        ) => {
-            const baseNockStub = createBaseNockStubWithCors()
-            return baseNockStub[verb](
-                `/relationships/${encodeURIComponent(
-                    subjectType
-                )}/${encodeURIComponent(subjectID)}/${encodeURIComponent(
-                    relType
-                )}/${encodeURIComponent(objectType)}/${encodeURIComponent(
-                    objectID
-                )}`
-            )
-                .query(true)
-                .reply(statusCode, JSON.stringify(response), responseHeaders)
-        }
+    { verb, responseHeaders = {} } = {},
+    subjectType,
+    subjectID,
+    relType,
+    objectType,
+    objectID,
+    [statusCode, response] = [200, relationshipsFixture]
+) => {
+    const baseNockStub = createBaseNockStubWithCors()
+    return baseNockStub[verb](
+        `/relationships/${encodeURIComponent(subjectType)}/${encodeURIComponent(
+            subjectID
+        )}/${encodeURIComponent(relType)}/${encodeURIComponent(
+            objectType
+        )}/${encodeURIComponent(objectID)}`
+    )
+        .query(true)
+        .reply(statusCode, JSON.stringify(response), responseHeaders)
+}
 
 beforeEach(() => {
     stubCorsPreFlight()
@@ -205,8 +203,7 @@ describe('getItemFields', () => {
 
 describe('putItem', () => {
     const dummyBody = {}
-    const setupPutItem = (...args) =>
-        stubItemResponse({ verb: 'put' }, ...args)
+    const setupPutItem = (...args) => stubItemResponse({ verb: 'put' }, ...args)
 
     test('should require type', async () => {
         expect.assertions(1)
@@ -503,7 +500,11 @@ describe('getItemPageFields', () => {
             expect.assertions(1)
 
             await expect(() =>
-                createCmdb()[method](stubLocals, dummySubjectType, dummySubjectID)
+                createCmdb()[method](
+                    stubLocals,
+                    dummySubjectType,
+                    dummySubjectID
+                )
             ).toThrow("The config parameter 'relType' is required")
         })
 
@@ -537,7 +538,7 @@ describe('getItemPageFields', () => {
         test('should call the correct endpoint', async () => {
             expect.assertions(1)
             const stubHttp = stubRelationshipsResponse(
-                {verb},
+                { verb },
                 dummySubjectType,
                 dummySubjectID,
                 dummyRelType,
@@ -561,7 +562,7 @@ describe('getItemPageFields', () => {
         test('should return the cmdb response', async () => {
             expect.assertions(1)
             stubRelationshipsResponse(
-                {verb},
+                { verb },
                 dummySubjectType,
                 dummySubjectID,
                 dummyRelType,

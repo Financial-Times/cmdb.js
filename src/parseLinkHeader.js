@@ -10,20 +10,19 @@ function parseLinkHeader(header) {
     if (!header || header.length === 0) {
         return {}
     }
-    return header.split(',')
-        .map((part) => part.split(';'))
+    return header
+        .split(',')
+        .map(part => part.split(';'))
         .reduce((result, section) => {
-            console.log(section);
             if (section.length < 2) {
                 throw new Error("section could not be split on ';'")
             }
 
             const url = section[0].replace(/<(.*)>/, '$1').trim()
             const name = section[1].replace(/rel="(.*)"/, '$1').trim()
-            result[name] = url;
-            return result;
+            result[name] = url
+            return result
         }, {})
 }
-
 
 export default parseLinkHeader

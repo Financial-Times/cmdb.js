@@ -10,6 +10,7 @@ Provides versions for the browser, and node.js.
 
 * Examples (and possibly implementation) biased toward express apps.
 * CMDB v3 is only directly compatible with v3.0.1 and above of this library
+* Prior versions of this library polluted the global scope with a `fetch` polyfill. This is no longer the case for current versions
 
 Pull requests are welcomed.
 

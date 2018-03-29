@@ -19,7 +19,7 @@ export default {
         'string_decoder',
         'url',
         'util',
-        'zlib'
+        'zlib',
     ],
     plugins: [
         babel({
@@ -46,7 +46,7 @@ export default {
         resolve({
             browser: false,
             extensions: ['.js', '.json'],
-            preferBuiltins: true
+            preferBuiltins: true,
         }),
     ],
 }

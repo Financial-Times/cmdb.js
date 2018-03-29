@@ -24,15 +24,15 @@ const required = key => {
  * @function
  * @returns {Object} A noop logger with the console API
  */
-const createNoopLogger = () => Object.keys(console).reduce(
-        (result, key) => Object.assign({}, result, { [key]() { } }),
+const createNoopLogger = () =>
+    Object.keys(console).reduce(
+        (result, key) => Object.assign({}, result, { [key]() {} }),
         Object.create(null)
     )
 
 /**
  * Object representing the CMDB API
- * @constructor
- * @class
+ * @class Cmdb
  * @param {Object} config - An object of key/value pairs holding configuration
  * @param {string} [config.api=https://Cmdb.ft.com/v2/] - The CMDB API endpoint to send requests to (defaults to production, change for other environments)
  * @param {string} config.apikey - The apikey to send to CMDB API
@@ -51,9 +51,7 @@ function Cmdb({
     this.api = api.slice(-1) !== '/' ? `${api}/` : api
     this.apikey = apikey
     this.verbose = verbose
-    this._logger = this.verbose
-        ? logger || console
-        : createNoopLogger()
+    this._logger = this.verbose ? logger || console : createNoopLogger()
 }
 
 /**
@@ -526,74 +524,73 @@ const getRelationshipPath = ({
         ),
     ].join('/')
 
-    /**
-     * @name Cmdb#getRelationship
-     * @method
-     * @memberof Cmdb
-     * @description Retrieves data about a relationship between two items CMDB.  Can be an existing relationship or a new one.
-     * @param {Object} [locals] - The res.locals value from a request in express
-     * @param {string} subjectType - The source item type for the relationship
-     * @param {string} subjectID - The source item dataItemID for the relationship
-     * @param {string} relType - The relationship type for the relationship
-     * @param {string} objectType - The destination item type for the relationship
-     * @param {string} objectID - The destination item dataItemID for the relationship
-     * @param {number} [timeout=12000] - the optional timeout period in milliseconds
-     * @returns {Promise<Object>} The updated data about the item held in the CMDB
-     */
+/**
+ * @name Cmdb#getRelationship
+ * @method
+ * @memberof Cmdb
+ * @description Retrieves data about a relationship between two items CMDB.  Can be an existing relationship or a new one.
+ * @param {Object} [locals] - The res.locals value from a request in express
+ * @param {string} subjectType - The source item type for the relationship
+ * @param {string} subjectID - The source item dataItemID for the relationship
+ * @param {string} relType - The relationship type for the relationship
+ * @param {string} objectType - The destination item type for the relationship
+ * @param {string} objectID - The destination item dataItemID for the relationship
+ * @param {number} [timeout=12000] - the optional timeout period in milliseconds
+ * @returns {Promise<Object>} The updated data about the item held in the CMDB
+ */
 
-    /**
-     * @name Cmdb#putRelationship
-     * @method
-     * @memberof Cmdb
-     * @description Updates data about a relationship between two items CMDB.
-     * @param {Object} [locals] - The res.locals value from a request in express
-     * @param {string} subjectType - The source item type for the relationship
-     * @param {string} subjectID - The source item dataItemID for the relationship
-     * @param {string} relType - The relationship type for the relationship
-     * @param {string} objectType - The destination item type for the relationship
-     * @param {string} objectID - The destination item dataItemID for the relationship
-     * @param {number} [timeout=12000] - the optional timeout period in milliseconds
-     * @returns {Promise<Object>} The updated data about the item held in the CMDB
-     */
+/**
+ * @name Cmdb#putRelationship
+ * @method
+ * @memberof Cmdb
+ * @description Updates data about a relationship between two items CMDB.
+ * @param {Object} [locals] - The res.locals value from a request in express
+ * @param {string} subjectType - The source item type for the relationship
+ * @param {string} subjectID - The source item dataItemID for the relationship
+ * @param {string} relType - The relationship type for the relationship
+ * @param {string} objectType - The destination item type for the relationship
+ * @param {string} objectID - The destination item dataItemID for the relationship
+ * @param {number} [timeout=12000] - the optional timeout period in milliseconds
+ * @returns {Promise<Object>} The updated data about the item held in the CMDB
+ */
 
-    /**
-     * @name Cmdb#deleteRelationship
-     * @method
-     * @memberof Cmdb
-     * @description Deletes a relationship between two items CMDB.
-     * @param {Object} [locals] - The res.locals value from a request in express
-     * @param {string} subjectType - The source item type for the relationship
-     * @param {string} subjectID - The source item dataItemID for the relationship
-     * @param {string} relType - The relationship type for the relationship
-     * @param {string} objectType - The destination item type for the relationship
-     * @param {string} objectID - The destination item dataItemID for the relationship
-     * @param {number} [timeout=12000] - the optional timeout period in milliseconds
-     * @returns {Promise<Object>} The updated data about the item held in the CMDB
-     */
-
-    ;[
-        { key: 'putRelationship', method: 'POST' },
-        { key: 'getRelationship', method: 'GET' },
-        { key: 'deleteRelationship', method: 'DELETE' },
-    ].forEach(({ key, method }) => {
-        Cmdb.prototype[key] = function (
-            locals,
-            subjectType = required('subjectType'),
-            subjectID = required('subjectID'),
-            relType = required('relType'),
-            objectType = required('objectType'),
-            objectID = required('objectID'),
-            timeout = 12000
-        ) {
-            const path = getRelationshipPath({
-                subjectType,
-                subjectID,
-                relType,
-                objectType,
-                objectID,
-            })
-            return this._fetch(locals, path, undefined, method, {}, timeout)
-        }
-    })
+/**
+ * @name Cmdb#deleteRelationship
+ * @method
+ * @memberof Cmdb
+ * @description Deletes a relationship between two items CMDB.
+ * @param {Object} [locals] - The res.locals value from a request in express
+ * @param {string} subjectType - The source item type for the relationship
+ * @param {string} subjectID - The source item dataItemID for the relationship
+ * @param {string} relType - The relationship type for the relationship
+ * @param {string} objectType - The destination item type for the relationship
+ * @param {string} objectID - The destination item dataItemID for the relationship
+ * @param {number} [timeout=12000] - the optional timeout period in milliseconds
+ * @returns {Promise<Object>} The updated data about the item held in the CMDB
+ */
+;[
+    { key: 'putRelationship', method: 'POST' },
+    { key: 'getRelationship', method: 'GET' },
+    { key: 'deleteRelationship', method: 'DELETE' },
+].forEach(({ key, method }) => {
+    Cmdb.prototype[key] = function(
+        locals,
+        subjectType = required('subjectType'),
+        subjectID = required('subjectID'),
+        relType = required('relType'),
+        objectType = required('objectType'),
+        objectID = required('objectID'),
+        timeout = 12000
+    ) {
+        const path = getRelationshipPath({
+            subjectType,
+            subjectID,
+            relType,
+            objectType,
+            objectID,
+        })
+        return this._fetch(locals, path, undefined, method, {}, timeout)
+    }
+})
 
 export default Cmdb
