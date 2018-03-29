@@ -4,7 +4,7 @@ import builtins from 'rollup-plugin-node-builtins'
 import commonjs from 'rollup-plugin-commonjs'
 
 export default {
-    input: 'cmdb.js',
+    input: 'index.js',
     output: {
         file: 'dist/cmdb.mjs',
         format: 'es',

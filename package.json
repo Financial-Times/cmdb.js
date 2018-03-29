@@ -6,7 +6,7 @@
   "browser": "dist/cmdb.mjs",
   "scripts": {
     "clean": "del ./dist",
-    "test": "jest __tests__/src ",
+    "test": "jest src ",
     "test:coverage": "npm test -- --coverage",
     "test:coverage:submit": "cat ./coverage/lcov.info | coveralls",
     "test:dist": "jest __tests__/dist",

@@ -1,5 +1,5 @@
 import nock from 'nock'
-import Cmdb from '../../cmdb'
+import Cmdb from '../cmdb'
 import itemFixture from './fixtures/item.json'
 import itemsFixture from './fixtures/items.json'
 import relationshipsFixture from './fixtures/relationships.json'
