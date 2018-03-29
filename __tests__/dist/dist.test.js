@@ -61,19 +61,15 @@ describe('Distributables', () => {
             await browser.close()
             server.close(done)
         })
-        ;[
-            { type: 'browser', key: 'Cmdb' },
-            { type: 'es', key: 'CmdbEs' },
-        ].forEach(({ type, key }) => {
-            test(`${type} module`, async () => {
-                expect.assertions(1)
 
-                await expect(
-                    page.evaluate(cmdbKey => {
-                        return new window.test[cmdbKey]({ apikey: 'stubKey' })
-                    }, key)
-                ).resolves.toBeInstanceOf(Object)
-            })
+        test('esm module', async () => {
+            expect.assertions(1)
+
+            await expect(
+                page.evaluate(cmdbKey => {
+                    return new window.test[cmdbKey]({ apikey: 'stubKey' })
+                }, 'CmdbEs')
+            ).resolves.toBeInstanceOf(Object)
         })
     })
 
