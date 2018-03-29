@@ -10,9 +10,14 @@ module.exports = {
     },
     overrides: [
         {
-            files: ['**/__tests__/*.js'],
+            files: [
+                '**/__tests__/**/*.js'
+            ],
             env: {
-                'jest/globals': true,
+                'jest/globals': true
+            },
+            globals: {
+                window: true
             },
             plugins: ['jest'],
             // Can't extend in overrides: https://github.com/eslint/eslint/issues/8813

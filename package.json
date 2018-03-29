@@ -13,7 +13,7 @@
     "build:esmodule": "rollup -c rollup.config.module.js",
     "build:node": "rollup -c rollup.config.node.js",
     "build": "npm-run-all clean --parallel build:**",
-    "generate-docs": "del docs && node_modules/.bin/jsdoc --configure .jsdoc.json --verbose && git add docs",
+    "generate-docs": "del ./docs && node_modules/.bin/jsdoc --configure .jsdoc.json --verbose && git add docs",
     "prepublishOnly": "npm run build",
     "lint": "eslint --cache --fix .",
     "lint-staged": "lint-staged",
