@@ -1,0 +1,195 @@
+[
+    {
+        "dataItemID": "access-service-gw-eu-west-1-prod.memb.ft.com",
+        "lastUpdate": "2017-07-19T02:06:47.080Z",
+        "dataTypeID": "endpoint",
+        "base": "access-service-gw-eu-west-1-prod.memb.ft.com",
+        "isLive": "True",
+        "variant": "US East",
+        "protocol": "https",
+        "aboutSuffix": "",
+        "healthSuffix": "__health",
+        "isHealthcheckFor": {
+            "system": [
+                {
+                    "dataItemID": "access-service",
+                    "lastUpdate": "2017-11-10T10:08:54.218Z",
+                    "dataTypeID": "system",
+                    "name": "Access",
+                    "SF_ID": "a22D0000000T9i8IAC",
+                    "notes":
+                        "Runbook information provided by Tyrone Cutajar: https://sites.google.com/a/ft.com/ft-technology-service-transition/home/run-book-library/accesstyronecutajar20140911",
+                    "title": "Access Run Book",
+                    "status": "None",
+                    "submitter": "Erin  Thompson",
+                    "incidentDL": "ft.technology@ft.com",
+                    "monitoring":
+                        "Data exists but size greater than 1kb and is not shown here.",
+                    "primaryURL": "https://access.ft.com",
+                    "description":
+                        "The Access service is the authorisation decision engine for content on ft.com (including www.ft.com, blogs.ft.com, ftalphaville.ft.com, presscuttings.ft.com, ig.ft.com)",
+                    "serviceTier": "Platinum",
+                    "serviceType": "BusinessService",
+                    "hostPlatform": "AWS",
+                    "serviceHours": "24 x 7",
+                    "gitRepository":
+                        "http://git.svc.ft.com/projects/ACCESS/repos/access-service/browse",
+                    "importComment":
+                        "Synced from https://sites.google.com/a/ft.com/ft-technology-service-transition/home/run-book-library/accesstyronecutajar20140911",
+                    "incidentEmail": "ft.technology@ft.com",
+                    "parentService": "Digital Services",
+                    "lifecycleStage": "Production",
+                    "technicalOwner": "Anurag\nKapur",
+                    "importTimestamp": "2016-11-26T17:13:42Z",
+                    "moreInformation":
+                        "Data exists but size greater than 1kb and is not shown here.",
+                    "supportSupplier": "N/A",
+                    "troubleshooting":
+                        "<table width=100% style=\"border:1px solid;\"><tr><td><b>Steps for troubleshooting incidents and issues</b></td></tr>\r\n<tr> <td>Refer to the <a href='https://sites.google.com/a/ft.com/technology/systems/membership/identity-and-access-management/02-sub-systems/access/panic-guide/access-nagios-panic-guide'>Access Nagios Alerts</a><br/><br/><b>Problems with Kafka<br/></b>In the event that Access can no longer consume messages because of a kafka problem, in most cases, a restart of the access service should allow the consumer to resume receiving messages. You can check how many seconds have elapsed since the last update by searching for 'UserLicenceChangeMessageHandler.time_since_last_update_seconds' on http://&lt;hostname&gt;:8081/metrics?pretty=true<br/><br/><b>Problems with Tungsten</b><br/><br/>The worst case impact of a Tungsten service failure is that registered users may be able to see more content than the current article count limit during this period. As a result it is ok to acknowledge any alert and contact Membership AIM during normal hours if the problem cannot be resolved by following the guide below.<br/><br/>Access uses tungsten in a multi-master configuration to replicate user decisions, where they've been granted access to view an article or not, to all hosts in the cluster. Access currently has 6 hosts in the UK and US, listed in the hardware section above, that each have a tungsten service name (Alpha, Bravo, Charlie, Delta, Echo, Foxtrot). When a service, e.g Alpha, is deemed as being in an OFFLINE state the node corresponding to the service will fail to replicate data to the other service nodes. <br/><br/>Logs: /opt/continuent/tungsten/tungsten-replicator/log/trepsvc.log<br/><br/>Where a tungsten service is reported as being in an offline or error state you can attempt to bring the service back online by running either <i>trepctl -service &lt;service_name&gt; online </i>or by performing a <i>service treplicator restart. </i>check the logs to see if any errors are being reported.<i> </i>If this hasn't brought the service back up this will need to be reported to Membership AIM.<br/><br/><b>Setting the site free<br/></b><br/>information <a href='https://sites.google.com/a/ft.com/technology/systems/membership/identity-and-access-management/02-sub-systems/access/engineering/02-wiki/setting-the-site-free'>here</a>.<br/><br/>\r\n</td></tr>\r\n</table>",
+                    "productOwnerName": "Jon Furse",
+                    "shortDescription":
+                        "The Access service is the authorisation decision engine for content on ft.com",
+                    "architectureDiagram": "<p>See below</p>",
+                    "failoverRecoveryPlan": ""
+                },
+                {
+                    "dataItemID": "ft-access",
+                    "lastUpdate": "2017-04-11T14:46:23.556346Z",
+                    "dataTypeID": "system",
+                    "name": "Access",
+                    "SF_ID": "a22D0000000T9i8IAC",
+                    "notes":
+                        "Runbook information provided by Tyrone Cutajar: https://sites.google.com/a/ft.com/ft-technology-service-transition/home/run-book-library/accesstyronecutajar20140911",
+                    "title": "Access Run Book",
+                    "status": "None",
+                    "submitter": "Erin  Thompson",
+                    "incidentDL": "ft.technology@ft.com",
+                    "monitoring":
+                        "Data exists but size greater than 1kb and is not shown here.",
+                    "primaryURL": "https://access.ft.com",
+                    "description":
+                        "The Access service is the authorisation decision engine for content on ft.com (including www.ft.com, blogs.ft.com, ftalphaville.ft.com, presscuttings.ft.com, ig.ft.com)",
+                    "serviceTier": "Platinum",
+                    "serviceType": "BusinessService",
+                    "hostPlatform": "AWS",
+                    "serviceHours": "24 x 7",
+                    "gitRepository":
+                        "http://git.svc.ft.com/projects/ACCESS/repos/access-service/browse",
+                    "importComment":
+                        "Synced from https://sites.google.com/a/ft.com/ft-technology-service-transition/home/run-book-library/accesstyronecutajar20140911",
+                    "incidentEmail": "ft.technology@ft.com",
+                    "parentService": "Digital Services",
+                    "lifecycleStage": "Retired",
+                    "technicalOwner": "Anurag\nKapur",
+                    "importTimestamp": "2016-11-26T17:13:42Z",
+                    "moreInformation":
+                        "Data exists but size greater than 1kb and is not shown here.",
+                    "supportSupplier": "N/A",
+                    "troubleshooting":
+                        "<table width=100% style=\"border:1px solid;\"><tr><td><b>Steps for troubleshooting incidents and issues</b></td></tr>\r\n<tr> <td>Refer to the <a href='https://sites.google.com/a/ft.com/technology/systems/membership/identity-and-access-management/02-sub-systems/access/panic-guide/access-nagios-panic-guide'>Access Nagios Alerts</a><br/><br/><b>Problems with Kafka<br/></b>In the event that Access can no longer consume messages because of a kafka problem, in most cases, a restart of the access service should allow the consumer to resume receiving messages. You can check how many seconds have elapsed since the last update by searching for 'UserLicenceChangeMessageHandler.time_since_last_update_seconds' on http://&lt;hostname&gt;:8081/metrics?pretty=true<br/><br/><b>Problems with Tungsten</b><br/><br/>The worst case impact of a Tungsten service failure is that registered users may be able to see more content than the current article count limit during this period. As a result it is ok to acknowledge any alert and contact Membership AIM during normal hours if the problem cannot be resolved by following the guide below.<br/><br/>Access uses tungsten in a multi-master configuration to replicate user decisions, where they've been granted access to view an article or not, to all hosts in the cluster. Access currently has 6 hosts in the UK and US, listed in the hardware section above, that each have a tungsten service name (Alpha, Bravo, Charlie, Delta, Echo, Foxtrot). When a service, e.g Alpha, is deemed as being in an OFFLINE state the node corresponding to the service will fail to replicate data to the other service nodes. <br/><br/>Logs: /opt/continuent/tungsten/tungsten-replicator/log/trepsvc.log<br/><br/>Where a tungsten service is reported as being in an offline or error state you can attempt to bring the service back online by running either <i>trepctl -service &lt;service_name&gt; online </i>or by performing a <i>service treplicator restart. </i>check the logs to see if any errors are being reported.<i> </i>If this hasn't brought the service back up this will need to be reported to Membership AIM.<br/><br/><b>Setting the site free<br/></b><br/>information <a href='https://sites.google.com/a/ft.com/technology/systems/membership/identity-and-access-management/02-sub-systems/access/engineering/02-wiki/setting-the-site-free'>here</a>.<br/><br/>\r\n</td></tr>\r\n</table>",
+                    "productOwnerName": "Jon Furse",
+                    "shortDescription":
+                        "The Access service is the authorisation decision engine for content on ft.com",
+                    "architectureDiagram": "<p>See below</p>",
+                    "failoverRecoveryPlan": ""
+                }
+            ]
+        }
+    },
+    {
+        "dataItemID": "access-service-gw-us-east-1-prod.memb.ft.com",
+        "lastUpdate": "2017-07-19T02:07:52.208Z",
+        "dataTypeID": "endpoint",
+        "base": "access-service-gw-us-east-1-prod.memb.ft.com",
+        "isLive": "True",
+        "protocol": "https",
+        "aboutSuffix": "",
+        "healthSuffix": "__health",
+        "isHealthcheckFor": {
+            "system": [
+                {
+                    "dataItemID": "access-service",
+                    "lastUpdate": "2017-11-10T10:08:54.218Z",
+                    "dataTypeID": "system",
+                    "name": "Access",
+                    "SF_ID": "a22D0000000T9i8IAC",
+                    "notes":
+                        "Runbook information provided by Tyrone Cutajar: https://sites.google.com/a/ft.com/ft-technology-service-transition/home/run-book-library/accesstyronecutajar20140911",
+                    "title": "Access Run Book",
+                    "status": "None",
+                    "submitter": "Erin  Thompson",
+                    "incidentDL": "ft.technology@ft.com",
+                    "monitoring":
+                        "Data exists but size greater than 1kb and is not shown here.",
+                    "primaryURL": "https://access.ft.com",
+                    "description":
+                        "The Access service is the authorisation decision engine for content on ft.com (including www.ft.com, blogs.ft.com, ftalphaville.ft.com, presscuttings.ft.com, ig.ft.com)",
+                    "serviceTier": "Platinum",
+                    "serviceType": "BusinessService",
+                    "hostPlatform": "AWS",
+                    "serviceHours": "24 x 7",
+                    "gitRepository":
+                        "http://git.svc.ft.com/projects/ACCESS/repos/access-service/browse",
+                    "importComment":
+                        "Synced from https://sites.google.com/a/ft.com/ft-technology-service-transition/home/run-book-library/accesstyronecutajar20140911",
+                    "incidentEmail": "ft.technology@ft.com",
+                    "parentService": "Digital Services",
+                    "lifecycleStage": "Production",
+                    "technicalOwner": "Anurag\nKapur",
+                    "importTimestamp": "2016-11-26T17:13:42Z",
+                    "moreInformation":
+                        "Data exists but size greater than 1kb and is not shown here.",
+                    "supportSupplier": "N/A",
+                    "troubleshooting":
+                        "<table width=100% style=\"border:1px solid;\"><tr><td><b>Steps for troubleshooting incidents and issues</b></td></tr>\r\n<tr> <td>Refer to the <a href='https://sites.google.com/a/ft.com/technology/systems/membership/identity-and-access-management/02-sub-systems/access/panic-guide/access-nagios-panic-guide'>Access Nagios Alerts</a><br/><br/><b>Problems with Kafka<br/></b>In the event that Access can no longer consume messages because of a kafka problem, in most cases, a restart of the access service should allow the consumer to resume receiving messages. You can check how many seconds have elapsed since the last update by searching for 'UserLicenceChangeMessageHandler.time_since_last_update_seconds' on http://&lt;hostname&gt;:8081/metrics?pretty=true<br/><br/><b>Problems with Tungsten</b><br/><br/>The worst case impact of a Tungsten service failure is that registered users may be able to see more content than the current article count limit during this period. As a result it is ok to acknowledge any alert and contact Membership AIM during normal hours if the problem cannot be resolved by following the guide below.<br/><br/>Access uses tungsten in a multi-master configuration to replicate user decisions, where they've been granted access to view an article or not, to all hosts in the cluster. Access currently has 6 hosts in the UK and US, listed in the hardware section above, that each have a tungsten service name (Alpha, Bravo, Charlie, Delta, Echo, Foxtrot). When a service, e.g Alpha, is deemed as being in an OFFLINE state the node corresponding to the service will fail to replicate data to the other service nodes. <br/><br/>Logs: /opt/continuent/tungsten/tungsten-replicator/log/trepsvc.log<br/><br/>Where a tungsten service is reported as being in an offline or error state you can attempt to bring the service back online by running either <i>trepctl -service &lt;service_name&gt; online </i>or by performing a <i>service treplicator restart. </i>check the logs to see if any errors are being reported.<i> </i>If this hasn't brought the service back up this will need to be reported to Membership AIM.<br/><br/><b>Setting the site free<br/></b><br/>information <a href='https://sites.google.com/a/ft.com/technology/systems/membership/identity-and-access-management/02-sub-systems/access/engineering/02-wiki/setting-the-site-free'>here</a>.<br/><br/>\r\n</td></tr>\r\n</table>",
+                    "productOwnerName": "Jon Furse",
+                    "shortDescription":
+                        "The Access service is the authorisation decision engine for content on ft.com",
+                    "architectureDiagram": "<p>See below</p>",
+                    "failoverRecoveryPlan": ""
+                },
+                {
+                    "dataItemID": "ft-access",
+                    "lastUpdate": "2017-04-11T14:46:23.556346Z",
+                    "dataTypeID": "system",
+                    "name": "Access",
+                    "SF_ID": "a22D0000000T9i8IAC",
+                    "notes":
+                        "Runbook information provided by Tyrone Cutajar: https://sites.google.com/a/ft.com/ft-technology-service-transition/home/run-book-library/accesstyronecutajar20140911",
+                    "title": "Access Run Book",
+                    "status": "None",
+                    "submitter": "Erin  Thompson",
+                    "incidentDL": "ft.technology@ft.com",
+                    "monitoring":
+                        "Data exists but size greater than 1kb and is not shown here.",
+                    "primaryURL": "https://access.ft.com",
+                    "description":
+                        "The Access service is the authorisation decision engine for content on ft.com (including www.ft.com, blogs.ft.com, ftalphaville.ft.com, presscuttings.ft.com, ig.ft.com)",
+                    "serviceTier": "Platinum",
+                    "serviceType": "BusinessService",
+                    "hostPlatform": "AWS",
+                    "serviceHours": "24 x 7",
+                    "gitRepository":
+                        "http://git.svc.ft.com/projects/ACCESS/repos/access-service/browse",
+                    "importComment":
+                        "Synced from https://sites.google.com/a/ft.com/ft-technology-service-transition/home/run-book-library/accesstyronecutajar20140911",
+                    "incidentEmail": "ft.technology@ft.com",
+                    "parentService": "Digital Services",
+                    "lifecycleStage": "Retired",
+                    "technicalOwner": "Anurag\nKapur",
+                    "importTimestamp": "2016-11-26T17:13:42Z",
+                    "moreInformation":
+                        "Data exists but size greater than 1kb and is not shown here.",
+                    "supportSupplier": "N/A",
+                    "troubleshooting":
+                        "<table width=100% style=\"border:1px solid;\"><tr><td><b>Steps for troubleshooting incidents and issues</b></td></tr>\r\n<tr> <td>Refer to the <a href='https://sites.google.com/a/ft.com/technology/systems/membership/identity-and-access-management/02-sub-systems/access/panic-guide/access-nagios-panic-guide'>Access Nagios Alerts</a><br/><br/><b>Problems with Kafka<br/></b>In the event that Access can no longer consume messages because of a kafka problem, in most cases, a restart of the access service should allow the consumer to resume receiving messages. You can check how many seconds have elapsed since the last update by searching for 'UserLicenceChangeMessageHandler.time_since_last_update_seconds' on http://&lt;hostname&gt;:8081/metrics?pretty=true<br/><br/><b>Problems with Tungsten</b><br/><br/>The worst case impact of a Tungsten service failure is that registered users may be able to see more content than the current article count limit during this period. As a result it is ok to acknowledge any alert and contact Membership AIM during normal hours if the problem cannot be resolved by following the guide below.<br/><br/>Access uses tungsten in a multi-master configuration to replicate user decisions, where they've been granted access to view an article or not, to all hosts in the cluster. Access currently has 6 hosts in the UK and US, listed in the hardware section above, that each have a tungsten service name (Alpha, Bravo, Charlie, Delta, Echo, Foxtrot). When a service, e.g Alpha, is deemed as being in an OFFLINE state the node corresponding to the service will fail to replicate data to the other service nodes. <br/><br/>Logs: /opt/continuent/tungsten/tungsten-replicator/log/trepsvc.log<br/><br/>Where a tungsten service is reported as being in an offline or error state you can attempt to bring the service back online by running either <i>trepctl -service &lt;service_name&gt; online </i>or by performing a <i>service treplicator restart. </i>check the logs to see if any errors are being reported.<i> </i>If this hasn't brought the service back up this will need to be reported to Membership AIM.<br/><br/><b>Setting the site free<br/></b><br/>information <a href='https://sites.google.com/a/ft.com/technology/systems/membership/identity-and-access-management/02-sub-systems/access/engineering/02-wiki/setting-the-site-free'>here</a>.<br/><br/>\r\n</td></tr>\r\n</table>",
+                    "productOwnerName": "Jon Furse",
+                    "shortDescription":
+                        "The Access service is the authorisation decision engine for content on ft.com",
+                    "architectureDiagram": "<p>See below</p>",
+                    "failoverRecoveryPlan": ""
+                }
+            ]
+        }
+    }
+]
