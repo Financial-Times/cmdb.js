@@ -7,8 +7,8 @@
     },
     "source": {
         "include": [
-            ".",
-            "package.json",
+            "index.js",
+            "src/",
             "README.md"
         ],
         "includePattern": ".js$",
