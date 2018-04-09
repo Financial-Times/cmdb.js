@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Cmdb.html">Cmdb</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#deleteItem">deleteItem</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getAllItemFields">getAllItemFields</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getAllItems">getAllItems</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getItem">getItem</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getItemCount">getItemCount</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getItemFields">getItemFields</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getItemPage">getItemPage</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getItemPageFields">getItemPageFields</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#putItem">putItem</a></span></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Cmdb.html">Cmdb</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#deleteItem">deleteItem</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#deleteRelationship">deleteRelationship</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getAllItemFields">getAllItemFields</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getAllItems">getAllItems</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getItem">getItem</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getItemCount">getItemCount</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getItemFields">getItemFields</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getItemPage">getItemPage</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getItemPageFields">getItemPageFields</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#getRelationship">getRelationship</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#putItem">putItem</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Cmdb.html#putRelationship">putRelationship</a></span></li>
 </nav>
 
 <div id="main">
@@ -50,7 +50,7 @@
     <section class="readme">
         <article><h1>cmdb.js</h1><p>A javascript library for interacting with the CMDB v3 (cmdb v2 is now retired).</p>
 <p>Provides versions for the browser, and node.js.</p>
-<p><a href="https://circleci.com/gh/Financial-Times/cmdb.js/tree/master"><img src="https://circleci.com/gh/Financial-Times/cmdb.js/tree/master.svg?style=svg&amp;circle-token=9fce87df6caa26834a62a01c2b940b7a51dc933c" alt="CircleCI"></a><a href="https://coveralls.io/github/Financial-Times/cmdb.js?branch=master"><img src="https://coveralls.io/repos/github/Financial-Times/cmdb.js/badge.svg?branch=master" alt="Coverage Status"></a></p>
+<p><a href="https://circleci.com/gh/Financial-Times/cmdb.js/tree/master"><img src="https://circleci.com/gh/Financial-Times/cmdb.js/tree/master.svg?style=svg&amp;circle-token=9fce87df6caa26834a62a01c2b940b7a51dc933c" alt="CircleCI"></a> <a href="https://coveralls.io/github/Financial-Times/cmdb.js?branch=master"><img src="https://coveralls.io/repos/github/Financial-Times/cmdb.js/badge.svg?branch=master" alt="Coverage Status"></a></p>
 <h2>Warnings</h2><ul>
 <li>Examples (and possibly implementation) biased toward express apps.</li>
 <li>CMDB v3 is only directly compatible with v3.0.1 and above of this library</li>
@@ -68,7 +68,8 @@ const cmdb = new Cmdb({
 const cmdb = new Cmdb({
     api: &quot;https://cmdb-test.in.ft.com/v3/&quot;,
     apikey: process.env.APIKEY,
-});</code></pre><h3>Getting information about a system</h3><p>Once you've setup the class with an apikey, you can get information about a given system by passing in the type 'system' and relevant system code into <code>getItem</code>:</p>
+});</code></pre><h3>API documentation</h3><p><a href="https://financial-times.github.io/cmdb.js">Available as jsdoc documentation</a></p>
+<h3>Getting information about a system</h3><p>Once you've setup the class with an apikey, you can get information about a given system by passing in the type 'system' and relevant system code into <code>getItem</code>:</p>
 <pre class="prettyprint source lang-js"><code>const systemCode = 'ft-dashing';
 cmdb.getItem(null, 'system', systemCode).then((result) => {
     console.log(result);
@@ -129,7 +130,7 @@ npm install`</code></pre><p>Linting and tests are ran on precommit and prepush r
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Mar 29 2018 13:35:48 GMT+0100 (BST) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Mon Apr 09 2018 16:47:16 GMT+0100 (BST) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

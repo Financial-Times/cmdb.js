@@ -1,3 +1,3 @@
-import Cmdb from './src/cmdb'
+import Cmdb from './src/cmdb';
 
-export default Cmdb
+export default Cmdb;

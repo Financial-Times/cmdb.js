@@ -1,6 +1,6 @@
-import querystring from 'querystring'
-import fetch from 'isomorphic-unfetch'
-import parseLinkHeader from './parseLinkHeader'
+import querystring from 'querystring';
+import fetch from 'isomorphic-unfetch';
+import parseLinkHeader from './parseLinkHeader';
 
 /**
  * Throws an error if the required key is not set in parameters
@@ -15,8 +15,8 @@ import parseLinkHeader from './parseLinkHeader'
  * @throws {Error} - A generic error including the given key which is missing
  */
 const required = key => {
-    throw new Error(`The config parameter '${key}' is required`)
-}
+    throw new Error(`The config parameter '${key}' is required`);
+};
 
 /**
  * Create a noop logger with the console API
@@ -28,7 +28,7 @@ const createNoopLogger = () =>
     Object.keys(console).reduce(
         (result, key) => Object.assign({}, result, { [key]() {} }),
         Object.create(null)
-    )
+    );
 
 /**
  * Object representing the CMDB API
@@ -46,12 +46,12 @@ function Cmdb({
     apikey = required('apikey'),
 } = {}) {
     if (typeof Promise === 'undefined') {
-        throw new Error('CMD API requires an environment with Promises')
+        throw new Error('CMD API requires an environment with Promises');
     }
-    this.api = api.slice(-1) !== '/' ? `${api}/` : api
-    this.apikey = apikey
-    this.verbose = verbose
-    this._logger = this.verbose ? logger || console : createNoopLogger()
+    this.api = api.slice(-1) !== '/' ? `${api}/` : api;
+    this.apikey = apikey;
+    this.verbose = verbose;
+    this._logger = this.verbose ? logger || console : createNoopLogger();
 }
 
 /**
@@ -72,19 +72,19 @@ Cmdb.prototype._getFetchCredentials = function _getFetchCredentials(
     const params = {
         headers: { apikey: this.apikey, 'x-api-key': this.apikey },
         timeout,
-    }
+    };
     if (method) {
-        params.method = method
+        params.method = method;
     }
     if (body) {
-        params.body = JSON.stringify(body)
-        params.headers['Content-Type'] = 'application/json'
+        params.body = JSON.stringify(body);
+        params.headers['Content-Type'] = 'application/json';
     }
     if (locals && locals.s3o_username) {
-        params.headers['FT-Forwarded-Auth'] = `ad:${locals.s3o_username}`
+        params.headers['FT-Forwarded-Auth'] = `ad:${locals.s3o_username}`;
     }
-    return params
-}
+    return params;
+};
 
 /**
  * Helper function for making requests to CMDB API
@@ -112,7 +112,7 @@ Cmdb.prototype._fetch = function _fetch(
     //      path = encodeURIComponent(path);
     //     }
     if (query && Object.keys(query).length > 0) {
-        path = `${path}?${querystring.stringify(query)}`
+        path = `${path}?${querystring.stringify(query)}`;
     }
 
     return fetch(
@@ -120,11 +120,11 @@ Cmdb.prototype._fetch = function _fetch(
         this._getFetchCredentials(locals, { method, body, timeout })
     ).then(response => {
         if (response.status >= 400) {
-            throw new Error(`Received ${response.status} response from CMDB`)
+            throw new Error(`Received ${response.status} response from CMDB`);
         }
-        return response.json()
-    })
-}
+        return response.json();
+    });
+};
 
 /**
  * Helper function for requested count of pages and itemsfrom CMDB API
@@ -143,7 +143,7 @@ Cmdb.prototype._fetchCount = function _fetchCount(
     timeout = 12000
 ) {
     if (query && Object.keys(query).length > 0) {
-        path = `${path}?${querystring.stringify(query)}`
+        path = `${path}?${querystring.stringify(query)}`;
     }
 
     return fetch(
@@ -153,33 +153,33 @@ Cmdb.prototype._fetchCount = function _fetchCount(
         // CMDB returns entirely different output when there are zero contacts
         // Just return an empty array in this case.
         if (response.status === 404) {
-            return {}
+            return {};
         }
         if (response.status !== 200) {
-            throw new Error(`Received ${response.status} response from CMDB`)
+            throw new Error(`Received ${response.status} response from CMDB`);
         }
 
         return response.json().then(body => {
             // default page and items count based on a single page containing array of items
 
-            let pages = 1
-            let items = body.length
+            let pages = 1;
+            let items = body.length;
 
             // aim to get "Count: Pages: nnn, Items: nnn"
-            const countstext = response.headers.get('Count')
+            const countstext = response.headers.get('Count');
             if (countstext) {
                 // we now have "Pages: nnn, Items: nnn"
-                const counts = countstext.split(',')
+                const counts = countstext.split(',');
                 if (counts.length === 2) {
                     // we now have "Pages: nnn" and "Items: nnn"
-                    pages = parseInt(counts[0].split(':')[1].trim(), 10)
-                    items = parseInt(counts[1].split(':')[1].trim(), 10)
+                    pages = parseInt(counts[0].split(':')[1].trim(), 10);
+                    items = parseInt(counts[1].split(':')[1].trim(), 10);
                 }
             }
-            return { pages, items }
-        })
-    })
-}
+            return { pages, items };
+        });
+    });
+};
 
 /**
  * Recursive helper function for requested paginated lists from CMDB API
@@ -198,36 +198,36 @@ Cmdb.prototype._fetchAll = function _fetchAll(
     timeout = 12000
 ) {
     if (query && Object.keys(query).length > 0) {
-        url = `${url}?${querystring.stringify(query)}`
+        url = `${url}?${querystring.stringify(query)}`;
     }
     return fetch(url, this._getFetchCredentials(locals, { timeout }))
         .then(response => {
             // CMDB returns entirely different output when there are zero contacts
             // Just return an empty array in this case.
             if (response.status === 404) {
-                return []
+                return [];
             }
             if (response.status !== 200) {
                 throw new Error(
                     `Received ${response.status} response from CMDB`
-                )
+                );
             }
-            const links = parseLinkHeader(response.headers.get('link'))
+            const links = parseLinkHeader(response.headers.get('link'));
             if (links.next) {
                 return response.json().then(data => {
                     return this._fetchAll(locals, links.next).then(nextdata => [
                         ...data,
                         ...nextdata,
-                    ])
-                })
+                    ]);
+                });
             }
-            return response.json()
+            return response.json();
         })
         .catch(error => {
-            this._logger.error(error)
-            throw error
-        })
-}
+            this._logger.error(error);
+            throw error;
+        });
+};
 
 /**
  * Gets data about a specific item in CMDB
@@ -244,9 +244,9 @@ Cmdb.prototype.getItem = function getItem(
     key = required('key'),
     timeout = 12000
 ) {
-    const path = `items/${encodeURIComponent(type)}/${encodeURIComponent(key)}`
-    return this._fetch(locals, path, undefined, undefined, undefined, timeout)
-}
+    const path = `items/${encodeURIComponent(type)}/${encodeURIComponent(key)}`;
+    return this._fetch(locals, path, undefined, undefined, undefined, timeout);
+};
 
 /**
  * Gets data about a specific item in CMDB
@@ -267,16 +267,16 @@ Cmdb.prototype.getItemFields = function getItemFields(
     relatedFields,
     timeout = 12000
 ) {
-    const path = `items/${encodeURIComponent(type)}/${encodeURIComponent(key)}`
-    const query = {}
+    const path = `items/${encodeURIComponent(type)}/${encodeURIComponent(key)}`;
+    const query = {};
     if (fields) {
-        query.outputfields = fields.join(',')
+        query.outputfields = fields.join(',');
     }
     if (relatedFields) {
-        query.show_related = relatedFields
+        query.show_related = relatedFields;
     }
-    return this._fetch(locals, path, query, undefined, undefined, timeout)
-}
+    return this._fetch(locals, path, query, undefined, undefined, timeout);
+};
 
 /**
  * Updates data about a specific item in CMDB.  Can be an existing item or a new item.
@@ -295,9 +295,9 @@ Cmdb.prototype.putItem = function putItem(
     body = required('body'),
     timeout = 12000
 ) {
-    const path = `items/${encodeURIComponent(type)}/${encodeURIComponent(key)}`
-    return this._fetch(locals, path, undefined, 'PUT', body, timeout)
-}
+    const path = `items/${encodeURIComponent(type)}/${encodeURIComponent(key)}`;
+    return this._fetch(locals, path, undefined, 'PUT', body, timeout);
+};
 
 /**
  * Deletes a specific item from CMDB.
@@ -314,9 +314,9 @@ Cmdb.prototype.deleteItem = function deleteItem(
     key = required('key'),
     timeout = 12000
 ) {
-    const path = `items/${encodeURIComponent(type)}/${encodeURIComponent(key)}`
-    return this._fetch(locals, path, undefined, 'DELETE', undefined, timeout)
-}
+    const path = `items/${encodeURIComponent(type)}/${encodeURIComponent(key)}`;
+    return this._fetch(locals, path, undefined, 'DELETE', undefined, timeout);
+};
 
 /**
  * Fetches all the items of a given type from the CMDB
@@ -335,16 +335,16 @@ Cmdb.prototype.getAllItems = function getAllItems(
     limit,
     timeout = 12000
 ) {
-    const url = `${this.api}items/${encodeURIComponent(type)}`
-    let query = {}
+    const url = `${this.api}items/${encodeURIComponent(type)}`;
+    let query = {};
     if (criteria) {
-        query = Object.assign(query, criteria)
+        query = Object.assign(query, criteria);
     }
     if (limit) {
-        query.limit = limit
+        query.limit = limit;
     }
-    return this._fetchAll(locals, url, query, timeout)
-}
+    return this._fetchAll(locals, url, query, timeout);
+};
 
 /**
  * Fetches all the items of a given type from the CMDB
@@ -367,22 +367,22 @@ Cmdb.prototype.getAllItemFields = function getAllItemFields(
     limit,
     timeout = 12000
 ) {
-    const url = `${this.api}items/${encodeURIComponent(type)}`
-    let query = {}
+    const url = `${this.api}items/${encodeURIComponent(type)}`;
+    let query = {};
     if (fields) {
-        query.outputfields = fields.join(',')
+        query.outputfields = fields.join(',');
     }
     if (criteria) {
-        query = Object.assign(query, criteria)
+        query = Object.assign(query, criteria);
     }
     if (relatedFields) {
-        query.show_related = relatedFields
+        query.show_related = relatedFields;
     }
     if (limit) {
-        query.limit = limit
+        query.limit = limit;
     }
-    return this._fetchAll(locals, url, query, timeout)
-}
+    return this._fetchAll(locals, url, query, timeout);
+};
 
 /**
  * Gets count infomation about a specific type of item in CMDB
@@ -399,18 +399,18 @@ Cmdb.prototype.getItemCount = function getItemCount(
     criteria,
     timeout = 12000
 ) {
-    const path = `items/${encodeURIComponent(type)}`
+    const path = `items/${encodeURIComponent(type)}`;
     let query = {
         page: 1,
         outputfields: '',
         show_related: 'False', // don't include related items; we only want a count
-    }
+    };
 
     if (criteria) {
-        query = Object.assign(query, criteria)
+        query = Object.assign(query, criteria);
     }
-    return this._fetchCount(locals, path, query, timeout)
-}
+    return this._fetchCount(locals, path, query, timeout);
+};
 
 /**
  * Gets data about a specific item in CMDB
@@ -435,16 +435,16 @@ Cmdb.prototype.getItemPage = function getItemPage(
 ) {
     let query = {
         page,
-    }
-    const path = `items/${encodeURIComponent(type)}`
+    };
+    const path = `items/${encodeURIComponent(type)}`;
     if (relatedFields) {
-        query.show_related = relatedFields
+        query.show_related = relatedFields;
     }
     if (criteria) {
-        query = Object.assign(query, criteria)
+        query = Object.assign(query, criteria);
     }
     if (limit) {
-        query.limit = limit
+        query.limit = limit;
     }
     return this._fetch(
         locals,
@@ -454,9 +454,9 @@ Cmdb.prototype.getItemPage = function getItemPage(
         undefined,
         timeout
     ).catch(() => {
-        return []
-    })
-}
+        return [];
+    });
+};
 
 /**
  * Gets data about a specific item in CMDB
@@ -481,23 +481,23 @@ Cmdb.prototype.getItemPageFields = function getItemPageFields(
     limit,
     timeout = 12000
 ) {
-    const path = `items/${encodeURIComponent(type)}`
+    const path = `items/${encodeURIComponent(type)}`;
     let query = {
         page,
-    }
+    };
     if (fields) {
-        query.outputfields = fields.join(',')
+        query.outputfields = fields.join(',');
     }
     if (relatedFields) {
-        query.show_related = relatedFields
+        query.show_related = relatedFields;
     }
     if (criteria) {
-        query = Object.assign(query, criteria)
+        query = Object.assign(query, criteria);
     }
     if (limit) {
-        query.limit = limit
+        query.limit = limit;
     }
-    this._logger.log('getItemPageFields:', querystring.stringify(query))
+    this._logger.log('getItemPageFields:', querystring.stringify(query));
     return this._fetch(
         locals,
         path,
@@ -506,9 +506,9 @@ Cmdb.prototype.getItemPageFields = function getItemPageFields(
         undefined,
         timeout
     ).catch(() => {
-        return []
-    })
-}
+        return [];
+    });
+};
 
 const getRelationshipPath = ({
     subjectType = required('subjectType'),
@@ -522,7 +522,7 @@ const getRelationshipPath = ({
         ...[subjectType, subjectID, relType, objectType, objectID].map(param =>
             encodeURIComponent(param)
         ),
-    ].join('/')
+    ].join('/');
 
 /**
  * @name Cmdb#getRelationship
@@ -568,7 +568,7 @@ const getRelationshipPath = ({
  * @param {number} [timeout=12000] - the optional timeout period in milliseconds
  * @returns {Promise<Object>} The updated data about the item held in the CMDB
  */
-;[
+[
     { key: 'putRelationship', method: 'POST' },
     { key: 'getRelationship', method: 'GET' },
     { key: 'deleteRelationship', method: 'DELETE' },
@@ -588,9 +588,9 @@ const getRelationshipPath = ({
             relType,
             objectType,
             objectID,
-        })
-        return this._fetch(locals, path, undefined, method, {}, timeout)
-    }
-})
+        });
+        return this._fetch(locals, path, undefined, method, {}, timeout);
+    };
+});
 
-export default Cmdb
+export default Cmdb;
