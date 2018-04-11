@@ -28,6 +28,10 @@ references:
       paths:
         - ./node_modules/
 
+  only_version_tags: &only_version_tags
+    tags:
+      only: /v[0-9]+(\.[0-9]+)*/
+
 jobs:
   checkout:
     <<: *container_config
@@ -101,18 +105,19 @@ workflows:
   version: 2
   build-and-deploy:
     jobs:
-      - checkout
+      - checkout:
+          filters: *only_version_tags
       - test:
           requires:
             - checkout
+          filters: *only_version_tags
       - release:
           requires:
             - test
           filters:
+            <<: *only_version_tags
             branches:
               ignore: /.*/
-            tags:
-              only: /v.*/
 
 experimental:
   notify:
