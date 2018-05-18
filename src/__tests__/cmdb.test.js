@@ -4,7 +4,7 @@ import itemFixture from './fixtures/item.json';
 import itemsFixture from './fixtures/items.json';
 import relationshipsFixture from './fixtures/relationships.json';
 
-const defaultApi = 'https://Cmdb.in.ft.com/v3/';
+const defaultApi = 'https://cmdb.in.ft.com/v3/';
 const stubType = 'system';
 const stubKey = 'dewey';
 const stubLocals = {
@@ -114,8 +114,6 @@ test('The constructor should error if no apikey is provided', () => {
 });
 
 describe('getItem', () => {
-    const setupGetItem = (...args) => stubItemResponse(undefined, ...args);
-
     test('should require type', async () => {
         expect.assertions(1);
 
@@ -136,7 +134,7 @@ describe('getItem', () => {
         expect.assertions(1);
         const givenType = stubType;
         const givenKey = stubKey;
-        const stubHttp = setupGetItem(givenType, givenKey);
+        const stubHttp = stubItemResponse(undefined, givenType, givenKey);
 
         try {
             await createCmdb().getItem(stubLocals, givenType, givenKey);
@@ -149,11 +147,49 @@ describe('getItem', () => {
         expect.assertions(1);
         const givenType = stubType;
         const givenKey = stubKey;
-        setupGetItem(givenType, givenKey);
+        stubItemResponse(undefined, givenType, givenKey);
 
         await expect(
             createCmdb().getItem(stubLocals, givenType, givenKey)
         ).resolves.toMatchSnapshot();
+    });
+
+    [403, 404, 500].forEach(statusCode => {
+        test(`should return an error with the statusCode of the failure if the API call returns a ${statusCode}`, async () => {
+            expect.assertions(4);
+            const givenType = stubType;
+            const givenKey = stubKey;
+            const givenHeaders = {
+                'Content-Type': 'text/html',
+            };
+            stubItemResponse(
+                { responseHeaders: givenHeaders },
+                givenType,
+                givenKey,
+                [statusCode, {}, givenHeaders]
+            );
+
+            return createCmdb()
+                .getItem(stubLocals, givenType, givenKey)
+                .then(response => {
+                    throw new Error(
+                        `Expected getItem call to reject but it was resolved with ${JSON.stringify(
+                            response
+                        )}`
+                    );
+                })
+                .catch(error => {
+                    expect(error).toHaveProperty(
+                        'message',
+                        `Received ${statusCode} response from CMDB`
+                    );
+                    expect(error).toHaveProperty('statusCode', statusCode);
+                    expect(error).toHaveProperty('headers');
+                    expect(error.headers.get('Content-Type')).toEqual(
+                        'text/html'
+                    );
+                });
+        });
     });
 });
 

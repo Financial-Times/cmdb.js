@@ -87,6 +87,20 @@ Cmdb.prototype._getFetchCredentials = function _getFetchCredentials(
 };
 
 /**
+ * Creates a new Error, augmented with the given properties from the response
+ * @private
+ * @function
+ * @param {string} message - The error message
+ * @param {Object} response - The fetch response used to augment the error with properties
+ * @returns {Error} - The created error object
+ */
+const createResponseError = (message, response = {}) =>
+    Object.assign(new Error(message), {
+        statusCode: response.status,
+        headers: response.headers,
+    });
+
+/**
  * Helper function for making requests to CMDB API
  * @method
  * @private
@@ -120,7 +134,10 @@ Cmdb.prototype._fetch = function _fetch(
         this._getFetchCredentials(locals, { method, body, timeout })
     ).then(response => {
         if (response.status >= 400) {
-            throw new Error(`Received ${response.status} response from CMDB`);
+            throw createResponseError(
+                `Received ${response.status} response from CMDB`,
+                response
+            );
         }
         return response.json();
     });
@@ -156,7 +173,10 @@ Cmdb.prototype._fetchCount = function _fetchCount(
             return {};
         }
         if (response.status !== 200) {
-            throw new Error(`Received ${response.status} response from CMDB`);
+            throw createResponseError(
+                `Received ${response.status} response from CMDB`,
+                response
+            );
         }
 
         return response.json().then(body => {
@@ -208,8 +228,9 @@ Cmdb.prototype._fetchAll = function _fetchAll(
                 return [];
             }
             if (response.status !== 200) {
-                throw new Error(
-                    `Received ${response.status} response from CMDB`
+                throw createResponseError(
+                    `Received ${response.status} response from CMDB`,
+                    response
                 );
             }
             const links = parseLinkHeader(response.headers.get('link'));
