@@ -3,12 +3,12 @@ version: 2
 references:
 
   container_config: &container_config
-    working_directory: ~/project/cmdb.js
+    working_directory: ~/cmdb.js
     docker:
       - image: circleci/node:8.10.0
 
   workspace_root: &workspace_root
-    "~/project"
+    "~/"
 
   attach_workspace: &attach_workspace
     attach_workspace:
@@ -46,11 +46,11 @@ jobs:
       - *cache_node_modules
 
       - persist_to_workspace:
-          root: ~/project
+          root: *workspace_root
           paths:
             - cmdb.js
 
-  test:
+  test-lint:
     <<: *container_config
     steps:
       - *attach_workspace
@@ -59,6 +59,12 @@ jobs:
           name: Run linter
           command: npm run lint
 
+
+  test-unit:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+
       - run:
           name: Run tests
           command: npm run test:coverage -- --ci && npm run test:coverage:submit
@@ -66,6 +72,11 @@ jobs:
       - store_artifacts:
           path: coverage
           destination: /coverage
+
+  test-dist:
+    <<: *container_config
+    steps:
+      - *attach_workspace
 
       - run:
           name: Build
@@ -97,8 +108,7 @@ jobs:
 
       - deploy:
           command: |
-            echo "_auth = $NPM_AUTH" >> .npmrc
-            echo "email = $NPM_EMAIL" >> .npmrc
+            NPM_USER=$NPM_USER NPM_PASS=$NPM_PASSWORD NPM_EMAIL=$NPM_EMAIL npx npm-cli-login
             npm publish --access public
 
 workflows:
@@ -107,13 +117,23 @@ workflows:
     jobs:
       - checkout:
           filters: *only_version_tags
-      - test:
+      - test-lint:
+          requires:
+            - checkout
+          filters: *only_version_tags
+      - test-unit:
+          requires:
+            - checkout
+          filters: *only_version_tags
+      - test-dist:
           requires:
             - checkout
           filters: *only_version_tags
       - release:
           requires:
-            - test
+            - test-lint
+            - test-unit
+            - test-dist
           filters:
             <<: *only_version_tags
             branches:

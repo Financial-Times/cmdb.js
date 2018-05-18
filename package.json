@@ -1,5 +1,5 @@
 {
-  "name": "cmdb.js",
+  "name": "@financial-times/cmdb.js",
   "description": "A javascript library for interacting with the CMDB v3",
   "version": "3.1.1",
   "main": "dist/cmdb.js",
