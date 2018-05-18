@@ -1,86 +1,78 @@
 {
-  "name": "@financial-times/cmdb.js",
-  "description": "A javascript library for interacting with the CMDB v3",
-  "version": "3.1.1",
-  "main": "dist/cmdb.js",
-  "browser": "dist/cmdb.mjs",
-  "scripts": {
-    "clean": "del ./dist",
-    "test": "jest src ",
-    "test:coverage": "npm test -- --coverage",
-    "test:coverage:submit": "cat ./coverage/lcov.info | coveralls",
-    "test:dist": "jest __tests__/dist",
-    "build:esmodule": "rollup -c rollup.config.module.js",
-    "build:node": "rollup -c rollup.config.node.js",
-    "build": "npm-run-all clean --parallel build:**",
-    "generate-docs": "del ./docs && node_modules/.bin/jsdoc --configure .jsdoc.json --verbose && git add docs",
-    "prepublishOnly": "npm run build",
-    "lint": "eslint --cache --fix .",
-    "lint-staged": "lint-staged",
-    "precommit": "npm-run-all --parallel lint-staged generate-docs",
-    "prepush": "npm-run-all test build test:dist",
-    "postcommit": "git update-index --again"
-  },
-  "engines": {
-    "node": ">= 4.3.2"
-  },
-  "lint-staged": {
-    "*.{js}": [
-      "eslint --cache --fix",
-      "git add"
-    ]
-  },
-  "jest": {
-    "testPathIgnorePatterns": [
-      "/node_modules/",
-      ".eslintrc"
-    ]
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Financial-Times/cmdb.js.git"
-  },
-  "keywords": [
-    "FT",
-    "CMDB"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Financial-Times/cmdb.js/issues"
-  },
-  "dependencies": {
-    "isomorphic-unfetch": "^2.0.0"
-  },
-  "homepage": "https://github.com/Financial-Times/cmdb.js#readme",
-  "devDependencies": {
-    "@financial-times/eslint-config-de-tooling": "^2.0.3",
-    "babel-core": "^6.26.0",
-    "babel-jest": "^22.4.3",
-    "babel-plugin-external-helpers": "^6.22.0",
-    "babel-preset-env": "^1.6.1",
-    "coveralls": "^3.0.0",
-    "del-cli": "^1.1.0",
-    "eslint": "^4.19.1",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-import": "^2.9.0",
-    "eslint-plugin-jest": "^21.15.0",
-    "eslint-plugin-mocha": "^5.0.0",
-    "eslint-plugin-prettier": "^2.6.0",
-    "husky": "^0.14.3",
-    "jest": "^22.4.3",
-    "jsdoc": "^3.5.5",
-    "lint-staged": "^7.0.0",
-    "minami": "^1.2.3",
-    "nock": "^9.2.3",
-    "npm-run-all": "^4.1.2",
-    "prettier": "^1.11.1",
-    "puppeteer": "^1.2.0",
-    "rollup": "^0.57.1",
-    "rollup-plugin-babel": "^3.0.3",
-    "rollup-plugin-commonjs": "^9.1.0",
-    "rollup-plugin-json": "^2.3.0",
-    "rollup-plugin-node-builtins": "^2.1.2",
-    "rollup-plugin-node-globals": "^1.2.0",
-    "rollup-plugin-node-resolve": "^3.3.0"
-  }
+    "name": "@financial-times/cmdb.js",
+    "description": "A javascript library for interacting with the CMDB v3",
+    "version": "3.1.3",
+    "main": "dist/cmdb.js",
+    "browser": "dist/cmdb.mjs",
+    "scripts": {
+        "clean": "del ./dist",
+        "test": "jest src ",
+        "test:coverage": "npm test -- --coverage",
+        "test:coverage:submit": "cat ./coverage/lcov.info | coveralls",
+        "test:dist": "jest __tests__/dist",
+        "build:esmodule": "rollup -c rollup.config.module.js",
+        "build:node": "rollup -c rollup.config.node.js",
+        "build": "npm-run-all clean --parallel build:**",
+        "generate-docs":
+            "del ./docs && node_modules/.bin/jsdoc --configure .jsdoc.json --verbose && git add docs",
+        "prepublishOnly": "npm run build",
+        "lint": "eslint --cache --fix .",
+        "lint-staged": "lint-staged",
+        "precommit": "npm-run-all --parallel lint-staged generate-docs",
+        "prepush": "npm-run-all test build test:dist",
+        "postcommit": "git update-index --again"
+    },
+    "engines": {
+        "node": ">= 4.3.2"
+    },
+    "lint-staged": {
+        "*.{js}": ["eslint --cache --fix", "git add"]
+    },
+    "jest": {
+        "testPathIgnorePatterns": ["/node_modules/", ".eslintrc"]
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Financial-Times/cmdb.js.git"
+    },
+    "keywords": ["FT", "CMDB"],
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/Financial-Times/cmdb.js/issues"
+    },
+    "dependencies": {
+        "isomorphic-unfetch": "^2.0.0"
+    },
+    "homepage": "https://github.com/Financial-Times/cmdb.js#readme",
+    "devDependencies": {
+        "@financial-times/eslint-config-de-tooling": "^2.0.3",
+        "babel-core": "^6.26.0",
+        "babel-jest": "^22.4.3",
+        "babel-plugin-external-helpers": "^6.22.0",
+        "babel-preset-env": "^1.6.1",
+        "coveralls": "^3.0.0",
+        "del-cli": "^1.1.0",
+        "eslint": "^4.19.1",
+        "eslint-config-prettier": "^2.9.0",
+        "eslint-plugin-import": "^2.9.0",
+        "eslint-plugin-jest": "^21.15.0",
+        "eslint-plugin-mocha": "^5.0.0",
+        "eslint-plugin-prettier": "^2.6.0",
+        "husky": "^0.14.3",
+        "jest": "^22.4.3",
+        "jsdoc": "^3.5.5",
+        "lint-staged": "^7.0.0",
+        "minami": "^1.2.3",
+        "nock": "^9.2.3",
+        "npm-run-all": "^4.1.2",
+        "prettier": "^1.11.1",
+        "puppeteer": "^1.2.0",
+        "rollup": "^0.57.1",
+        "rollup-plugin-babel": "^3.0.3",
+        "rollup-plugin-commonjs": "^9.1.0",
+        "rollup-plugin-json": "^2.3.0",
+        "rollup-plugin-node-builtins": "^2.1.2",
+        "rollup-plugin-node-globals": "^1.2.0",
+        "rollup-plugin-node-resolve": "^3.3.0"
+    }
 }
