@@ -343,7 +343,7 @@ Cmdb.prototype.deleteItem = function deleteItem(
  * Fetches all the items of a given type from the CMDB
  * @method
  * @param {Object} [locals] - The res.locals value from a request in express
- * @param {string} type - The type of items to fetch
+ * @param {string} [type] - The type of items to fetch (optional) - Defaults to all items
  * @param {string} [criteria] - The query parameter(s) to restrict items (optional)
  * @param {number} [limit] - The number of records to return in one underlying page fetch call (optional)
  * @param {number} [timeout=12000] - The timeout limit (optional)
@@ -351,12 +351,13 @@ Cmdb.prototype.deleteItem = function deleteItem(
  */
 Cmdb.prototype.getAllItems = function getAllItems(
     locals,
-    type = required('type'),
+    type,
     criteria,
     limit,
     timeout = 12000
 ) {
-    const url = `${this.api}items/${encodeURIComponent(type)}`;
+    const encodedTypePath = type ? `/${encodeURIComponent(type)}` : '';
+    const url = `${this.api}items${encodedTypePath}`;
     let query = {};
     if (criteria) {
         query = Object.assign(query, criteria);

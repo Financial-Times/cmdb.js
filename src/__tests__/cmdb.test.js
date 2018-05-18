@@ -57,7 +57,8 @@ const stubItemsResponse = (
         responseHeaders
     );
     const baseNockStub = createBaseNockStubWithCors();
-    return baseNockStub[verb](`/items/${encodeURIComponent(type)}`, body)
+    const encodedTypePath = type ? `/${encodeURIComponent(type)}` : '';
+    return baseNockStub[verb](`/items${encodedTypePath}`, body)
         .query(true)
         .reply(statusCode, JSON.stringify(response), mergedResponseHeaders);
 };
@@ -136,11 +137,8 @@ describe('getItem', () => {
         const givenKey = stubKey;
         const stubHttp = stubItemResponse(undefined, givenType, givenKey);
 
-        try {
-            await createCmdb().getItem(stubLocals, givenType, givenKey);
-        } finally {
-            expect(stubHttp.isDone()).toBeTruthy();
-        }
+        await createCmdb().getItem(stubLocals, givenType, givenKey);
+        expect(stubHttp.isDone()).toBeTruthy();
     });
 
     test('should return the cmdb response', async () => {
@@ -219,11 +217,8 @@ describe('getItemFields', () => {
         const givenKey = stubKey;
         const stubHttp = setupGetItemFields(givenType, givenKey);
 
-        try {
-            await createCmdb().getItemFields(stubLocals, givenType, givenKey);
-        } finally {
-            expect(stubHttp.isDone()).toBeTruthy();
-        }
+        await createCmdb().getItemFields(stubLocals, givenType, givenKey);
+        expect(stubHttp.isDone()).toBeTruthy();
     });
 
     test('should return the cmdb response', async () => {
@@ -273,16 +268,8 @@ describe('putItem', () => {
         const givenKey = stubKey;
         const stubHttp = setupPutItem(givenType, givenKey);
 
-        try {
-            await createCmdb().putItem(
-                stubLocals,
-                givenType,
-                givenKey,
-                dummyBody
-            );
-        } finally {
-            expect(stubHttp.isDone()).toBeTruthy();
-        }
+        await createCmdb().putItem(stubLocals, givenType, givenKey, dummyBody);
+        expect(stubHttp.isDone()).toBeTruthy();
     });
 
     test('should return the cmdb response', async () => {
@@ -323,11 +310,8 @@ describe('deleteItem', () => {
         const givenKey = stubKey;
         const stubHttp = setupDeleteItem(givenType, givenKey);
 
-        try {
-            await createCmdb().deleteItem(stubLocals, givenType, givenKey);
-        } finally {
-            expect(stubHttp.isDone()).toBeTruthy();
-        }
+        await createCmdb().deleteItem(stubLocals, givenType, givenKey);
+        expect(stubHttp.isDone()).toBeTruthy();
     });
 
     test('should return the cmdb response', async () => {
@@ -345,23 +329,29 @@ describe('deleteItem', () => {
 describe('getAllItems', () => {
     const stubGetAllItems = (...args) => stubItemsResponse(undefined, ...args);
 
-    test('should require type', async () => {
+    test('should not require type', async () => {
         expect.assertions(1);
+        stubGetAllItems();
 
         await expect(() =>
             createCmdb().getAllItems(stubLocals, undefined)
-        ).toThrow("The config parameter 'type' is required");
+        ).not.toThrow();
     });
 
-    test('should call the correct endpoint', async () => {
+    test('should call the endpoint for the given type if provided', async () => {
         expect.assertions(1);
         const stubHttp = stubGetAllItems(stubType);
 
-        try {
-            await createCmdb().getAllItems(stubLocals, stubType);
-        } finally {
-            expect(stubHttp.isDone()).toBeTruthy();
-        }
+        await createCmdb().getAllItems(stubLocals, stubType);
+        expect(stubHttp.isDone()).toBeTruthy();
+    });
+
+    test('should call the endpoint to get all types if no type is given', async () => {
+        expect.assertions(1);
+        const stubHttp = stubGetAllItems();
+
+        await createCmdb().getAllItems(stubLocals);
+        expect(stubHttp.isDone()).toBeTruthy();
     });
 
     test('should return the cmdb response', async () => {
@@ -390,11 +380,8 @@ describe('getAllItemFields', () => {
         expect.assertions(1);
         const stubHttp = stubGetAllItemFields(stubType);
 
-        try {
-            await createCmdb().getAllItemFields(stubLocals, stubType);
-        } finally {
-            expect(stubHttp.isDone()).toBeTruthy();
-        }
+        await createCmdb().getAllItemFields(stubLocals, stubType);
+        expect(stubHttp.isDone()).toBeTruthy();
     });
 
     test('should return the cmdb response', async () => {
@@ -422,11 +409,8 @@ describe('getItemCount', () => {
         expect.assertions(1);
         const stubHttp = stubGetItemCount(stubType);
 
-        try {
-            await createCmdb().getItemCount(stubLocals, stubType);
-        } finally {
-            expect(stubHttp.isDone()).toBeTruthy();
-        }
+        await createCmdb().getItemCount(stubLocals, stubType);
+        expect(stubHttp.isDone()).toBeTruthy();
     });
 
     test('should return the cmdb response', async () => {
@@ -457,11 +441,8 @@ describe('getItemPage', () => {
         expect.assertions(1);
         const stubHttp = stubGetItemPage(stubType);
 
-        try {
-            await createCmdb().getItemPage(stubLocals, stubType);
-        } finally {
-            expect(stubHttp.isDone()).toBeTruthy();
-        }
+        await createCmdb().getItemPage(stubLocals, stubType);
+        expect(stubHttp.isDone()).toBeTruthy();
     });
 
     test('should return the cmdb response', async () => {
@@ -490,11 +471,8 @@ describe('getItemPageFields', () => {
         expect.assertions(1);
         const stubHttp = stubGetItemPageFields(stubType);
 
-        try {
-            await createCmdb().getItemPageFields(stubLocals, stubType);
-        } finally {
-            expect(stubHttp.isDone()).toBeTruthy();
-        }
+        await createCmdb().getItemPageFields(stubLocals, stubType);
+        expect(stubHttp.isDone()).toBeTruthy();
     });
 
     test('should return the cmdb response', async () => {
@@ -584,18 +562,15 @@ describe('getItemPageFields', () => {
                 dummyObjectID
             );
 
-            try {
-                await createCmdb()[method](
-                    stubLocals,
-                    dummySubjectType,
-                    dummySubjectID,
-                    dummyRelType,
-                    dummyObjectType,
-                    dummyObjectID
-                );
-            } finally {
-                expect(stubHttp.isDone()).toBeTruthy();
-            }
+            await createCmdb()[method](
+                stubLocals,
+                dummySubjectType,
+                dummySubjectID,
+                dummyRelType,
+                dummyObjectType,
+                dummyObjectID
+            );
+            expect(stubHttp.isDone()).toBeTruthy();
         });
         test('should return the cmdb response', async () => {
             expect.assertions(1);
