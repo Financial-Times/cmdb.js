@@ -16,7 +16,8 @@
         "generate-docs":
             "del ./docs && node_modules/.bin/jsdoc --configure .jsdoc.json --verbose && git add docs",
         "prepublishOnly": "npm run build",
-        "lint": "eslint --cache --fix .",
+        "lint": "npm run lint:ci -- --cache --fix",
+        "lint:ci": "eslint .",
         "lint-staged": "lint-staged",
         "precommit": "npm-run-all --parallel lint-staged generate-docs",
         "prepush": "npm-run-all test build test:dist",
