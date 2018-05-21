@@ -33,7 +33,7 @@ const stubItemResponse = (
     { verb = 'get', responseHeaders = {}, body } = {},
     type,
     key,
-    [statusCode, response] = [200, itemFixture]
+    [statusCode, response] = [200, JSON.stringify(itemFixture)]
 ) => {
     const baseNockStub = createBaseNockStubWithCors();
     return baseNockStub[verb](
@@ -41,7 +41,7 @@ const stubItemResponse = (
         body
     )
         .query(true)
-        .reply(statusCode, JSON.stringify(response), responseHeaders);
+        .reply(statusCode, response, responseHeaders);
 };
 
 const stubItemsResponse = (
@@ -154,17 +154,20 @@ describe('getItem', () => {
 
     [403, 404, 500].forEach(statusCode => {
         test(`should return an error with the statusCode of the failure if the API call returns a ${statusCode}`, async () => {
-            expect.assertions(4);
+            expect.assertions(6);
             const givenType = stubType;
             const givenKey = stubKey;
             const givenHeaders = {
                 'Content-Type': 'text/html',
             };
+            const givenResponseBody = JSON.stringify({
+                error: ['some error'],
+            });
             stubItemResponse(
                 { responseHeaders: givenHeaders },
                 givenType,
                 givenKey,
-                [statusCode, {}, givenHeaders]
+                [statusCode, givenResponseBody]
             );
 
             return createCmdb()
@@ -186,8 +189,47 @@ describe('getItem', () => {
                     expect(error.headers.get('Content-Type')).toEqual(
                         'text/html'
                     );
+                    expect(error).toHaveProperty('body');
+                    expect(error.body).toEqual(JSON.parse(givenResponseBody));
                 });
         });
+    });
+
+    test('should return an error if the response is not OK and the body is not JSON', async () => {
+        expect.assertions(5);
+        const statusCode = 500;
+        const givenType = stubType;
+        const givenKey = stubKey;
+        const givenHeaders = {
+            'Content-Type': 'text/html',
+        };
+        const givenResponseBody = 'A non-json string {';
+        stubItemResponse(
+            { responseHeaders: givenHeaders },
+            givenType,
+            givenKey,
+            [statusCode, givenResponseBody]
+        );
+
+        return createCmdb()
+            .getItem(stubLocals, givenType, givenKey)
+            .then(response => {
+                throw new Error(
+                    `Expected getItem call to reject but it was resolved with ${JSON.stringify(
+                        response
+                    )}`
+                );
+            })
+            .catch(error => {
+                expect(error).toHaveProperty(
+                    'message',
+                    `Received response with invalid body from CMDB`
+                );
+                expect(error).toHaveProperty('statusCode', statusCode);
+                expect(error).toHaveProperty('headers');
+                expect(error.headers.get('Content-Type')).toEqual('text/html');
+                expect(error.body).not.toBeDefined();
+            });
     });
 });
 
