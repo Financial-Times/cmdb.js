@@ -148,19 +148,17 @@ Object {
 `;
 
 exports[`deleteRelationship should return the cmdb response 1`] = `
-Array [
-  Object {
-    "id": 955,
-    "lastUpdate": "2017-04-26T01:36:08.952Z",
-    "objectID": "ashleydesouza",
-    "objectKey_id": 522,
-    "objectType_id": "contact",
-    "relationshipType_id": "productOwner",
-    "subjectID": "dewey",
-    "subjectKey_id": 527,
-    "subjectType_id": "system",
-  },
-]
+Object {
+  "id": 955,
+  "lastUpdate": "2017-04-26T01:36:08.952Z",
+  "objectID": "ashleydesouza",
+  "objectKey_id": 522,
+  "objectType_id": "contact",
+  "relationshipType_id": "productOwner",
+  "subjectID": "dewey",
+  "subjectKey_id": 527,
+  "subjectType_id": "system",
+}
 `;
 
 exports[`getAllItemFields should return the cmdb response 1`] = `
@@ -1186,6 +1184,20 @@ Kapur",
 `;
 
 exports[`getRelationship should return the cmdb response 1`] = `
+Object {
+  "id": 955,
+  "lastUpdate": "2017-04-26T01:36:08.952Z",
+  "objectID": "ashleydesouza",
+  "objectKey_id": 522,
+  "objectType_id": "contact",
+  "relationshipType_id": "productOwner",
+  "subjectID": "dewey",
+  "subjectKey_id": 527,
+  "subjectType_id": "system",
+}
+`;
+
+exports[`getRelationships should return the cmdb response when the relationship type is not specified 1`] = `
 Array [
   Object {
     "id": 955,
@@ -1194,6 +1206,44 @@ Array [
     "objectKey_id": 522,
     "objectType_id": "contact",
     "relationshipType_id": "productOwner",
+    "subjectID": "dewey",
+    "subjectKey_id": 527,
+    "subjectType_id": "system",
+  },
+  Object {
+    "id": 912,
+    "lastUpdate": "2017-03-26T01:36:08.952Z",
+    "objectID": "geoffthorpe",
+    "objectKey_id": 222,
+    "objectType_id": "contact",
+    "relationshipType_id": "techlead",
+    "subjectID": "dewey",
+    "subjectKey_id": 527,
+    "subjectType_id": "system",
+  },
+]
+`;
+
+exports[`getRelationships should return the cmdb response when the relationship type is specified 1`] = `
+Array [
+  Object {
+    "id": 955,
+    "lastUpdate": "2017-04-26T01:36:08.952Z",
+    "objectID": "ashleydesouza",
+    "objectKey_id": 522,
+    "objectType_id": "contact",
+    "relationshipType_id": "productOwner",
+    "subjectID": "dewey",
+    "subjectKey_id": 527,
+    "subjectType_id": "system",
+  },
+  Object {
+    "id": 912,
+    "lastUpdate": "2017-03-26T01:36:08.952Z",
+    "objectID": "geoffthorpe",
+    "objectKey_id": 222,
+    "objectType_id": "contact",
+    "relationshipType_id": "techlead",
     "subjectID": "dewey",
     "subjectKey_id": 527,
     "subjectType_id": "system",
@@ -1349,17 +1399,15 @@ Object {
 `;
 
 exports[`putRelationship should return the cmdb response 1`] = `
-Array [
-  Object {
-    "id": 955,
-    "lastUpdate": "2017-04-26T01:36:08.952Z",
-    "objectID": "ashleydesouza",
-    "objectKey_id": 522,
-    "objectType_id": "contact",
-    "relationshipType_id": "productOwner",
-    "subjectID": "dewey",
-    "subjectKey_id": 527,
-    "subjectType_id": "system",
-  },
-]
+Object {
+  "id": 955,
+  "lastUpdate": "2017-04-26T01:36:08.952Z",
+  "objectID": "ashleydesouza",
+  "objectKey_id": 522,
+  "objectType_id": "contact",
+  "relationshipType_id": "productOwner",
+  "subjectID": "dewey",
+  "subjectKey_id": 527,
+  "subjectType_id": "system",
+}
 `;

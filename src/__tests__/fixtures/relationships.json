@@ -9,5 +9,16 @@
         "objectKey_id": 522,
         "subjectKey_id": 527,
         "lastUpdate": "2017-04-26T01:36:08.952Z"
+    },
+    {
+        "id": 912,
+        "subjectID": "dewey",
+        "objectID": "geoffthorpe",
+        "objectType_id": "contact",
+        "relationshipType_id": "techlead",
+        "subjectType_id": "system",
+        "objectKey_id": 222,
+        "subjectKey_id": 527,
+        "lastUpdate": "2017-03-26T01:36:08.952Z"
     }
 ]
