@@ -4,7 +4,7 @@
  * @function
  * @example
  * myFunction({
- *  requiredParameter = required('requiredParameter)
+ *  requiredParameter = required('requiredParameter')
  * })
  * @param {string} key - The key to include in the error message
  * @returns {undefined}
