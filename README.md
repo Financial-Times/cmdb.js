@@ -4,7 +4,9 @@ A javascript library for interacting with the CMDB v3 (cmdb v2 is now retired).
 
 Provides versions for the browser, and node.js.
 
-[![CircleCI](https://circleci.com/gh/Financial-Times/cmdb.js/tree/master.svg?style=svg&circle-token=9fce87df6caa26834a62a01c2b940b7a51dc933c)](https://circleci.com/gh/Financial-Times/cmdb.js/tree/master) [![Coverage Status](https://coveralls.io/repos/github/Financial-Times/cmdb.js/badge.svg?branch=master)](https://coveralls.io/github/Financial-Times/cmdb.js?branch=master)
+[![npm](https://img.shields.io/npm/v/@financial-times/cmdb.js.svg)](https://www.npmjs.com/package/@financial-times/cmdb.js)
+[![CircleCI token](https://img.shields.io/circleci/token/9fce87df6caa26834a62a01c2b940b7a51dc933c/project/github/Financial-Times/cmdb.js/master.svg)](https://circleci.com/gh/Financial-Times/cmdb.js/tree/master)
+[![Coverage Status](https://coveralls.io/repos/github/Financial-Times/cmdb.js/badge.svg?branch=master)](https://coveralls.io/github/Financial-Times/cmdb.js?branch=master)
 
 ## Warnings
 
