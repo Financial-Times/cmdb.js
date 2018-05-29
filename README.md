@@ -6,7 +6,7 @@ Provides versions for the browser, and node.js.
 
 [![npm](https://img.shields.io/npm/v/@financial-times/cmdb%2Ejs.svg)](https://www.npmjs.com/package/@financial-times/cmdb.js)
 [![CircleCI token](https://img.shields.io/circleci/token/633bd224f2506616b66c30e8d8b77dfed5f009dc/project/github/Financial-Times/cmdb%2Ejs/master.svg)](https://circleci.com/gh/Financial-Times/cmdb.js/tree/master)
-[![Coverage Status](https://coveralls.io/repos/github/Financial-Times/cmdb%2Ejs/badge.svg?branch=master)](https://coveralls.io/github/Financial-Times/cmdb.js?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/Financial-Times/cmdb.js/badge.svg?branch=master)](https://coveralls.io/github/Financial-Times/cmdb.js?branch=master)
 
 ## Warnings
 
