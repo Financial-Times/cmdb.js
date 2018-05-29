@@ -2,6 +2,7 @@ import nock from 'nock';
 import Cmdb from '../cmdb';
 import itemFixture from './fixtures/item.json';
 import itemsFixture from './fixtures/items.json';
+import relationshipFixture from './fixtures/relationship.json';
 import relationshipsFixture from './fixtures/relationships.json';
 
 const defaultApi = 'https://cmdb.in.ft.com/v3/';
@@ -63,14 +64,14 @@ const stubItemsResponse = (
         .reply(statusCode, JSON.stringify(response), mergedResponseHeaders);
 };
 
-const stubRelationshipsResponse = (
+const stubRelationshipResponse = (
     { verb, responseHeaders = {} } = {},
     subjectType,
     subjectID,
     relType,
     objectType,
     objectID,
-    [statusCode, response] = [200, relationshipsFixture]
+    [statusCode, response] = [200, relationshipFixture]
 ) => {
     const baseNockStub = createBaseNockStubWithCors();
     return baseNockStub[verb](
@@ -80,6 +81,23 @@ const stubRelationshipsResponse = (
             objectType
         )}/${encodeURIComponent(objectID)}`
     )
+        .query(true)
+        .reply(statusCode, JSON.stringify(response), responseHeaders);
+};
+
+const stubRelationshipsResponse = (
+    { responseHeaders = {} } = {},
+    subjectType,
+    subjectID,
+    relType,
+    [statusCode, response] = [200, relationshipsFixture]
+) => {
+    const baseNockStub = createBaseNockStubWithCors();
+    const basePath = `/relationships/${encodeURIComponent(
+        subjectType
+    )}/${encodeURIComponent(subjectID)}`;
+    return baseNockStub
+        .get(relType ? `${basePath}/${encodeURIComponent(relType)}` : basePath)
         .query(true)
         .reply(statusCode, JSON.stringify(response), responseHeaders);
 };
@@ -526,6 +544,95 @@ describe('getItemPageFields', () => {
         ).resolves.toMatchSnapshot();
     });
 });
+
+describe('getRelationships', () => {
+    const dummySubjectType = 'system';
+    const dummySubjectID = 'dewey';
+    const dummyRelType = 'primaryContactFor';
+
+    test('should require subjectType', async () => {
+        expect.assertions(1);
+
+        await expect(() =>
+            createCmdb().getRelationships(stubLocals, undefined)
+        ).toThrow("The config parameter 'subjectType' is required");
+    });
+
+    test('should require subjectID', async () => {
+        expect.assertions(1);
+
+        await expect(() =>
+            createCmdb().getRelationships(stubLocals, dummySubjectType)
+        ).toThrow("The config parameter 'subjectID' is required");
+    });
+
+    test('should call the correct endpoint when the relationship type is specified', async () => {
+        expect.assertions(1);
+        const stubHttp = stubRelationshipsResponse(
+            undefined,
+            dummySubjectType,
+            dummySubjectID,
+            dummyRelType
+        );
+
+        await createCmdb().getRelationships(
+            stubLocals,
+            dummySubjectType,
+            dummySubjectID,
+            dummyRelType
+        );
+        expect(stubHttp.isDone()).toBeTruthy();
+    });
+
+    test('should return the cmdb response when the relationship type is specified', async () => {
+        expect.assertions(1);
+        stubRelationshipsResponse(
+            undefined,
+            dummySubjectType,
+            dummySubjectID,
+            dummyRelType
+        );
+
+        await expect(
+            createCmdb().getRelationships(
+                stubLocals,
+                dummySubjectType,
+                dummySubjectID,
+                dummyRelType
+            )
+        ).resolves.toMatchSnapshot();
+    });
+
+    test('should call the correct endpoint when the relationship type is not specified', async () => {
+        expect.assertions(1);
+        const stubHttp = stubRelationshipsResponse(
+            undefined,
+            dummySubjectType,
+            dummySubjectID
+        );
+
+        await createCmdb().getRelationships(
+            stubLocals,
+            dummySubjectType,
+            dummySubjectID
+        );
+        expect(stubHttp.isDone()).toBeTruthy();
+    });
+
+    test('should return the cmdb response when the relationship type is not specified', async () => {
+        expect.assertions(1);
+        stubRelationshipsResponse(undefined, dummySubjectType, dummySubjectID);
+
+        await expect(
+            createCmdb().getRelationships(
+                stubLocals,
+                dummySubjectType,
+                dummySubjectID
+            )
+        ).resolves.toMatchSnapshot();
+    });
+});
+
 [
     { method: 'putRelationship', verb: 'post' },
     { method: 'getRelationship', verb: 'get' },
@@ -595,7 +702,7 @@ describe('getItemPageFields', () => {
 
         test('should call the correct endpoint', async () => {
             expect.assertions(1);
-            const stubHttp = stubRelationshipsResponse(
+            const stubHttp = stubRelationshipResponse(
                 { verb },
                 dummySubjectType,
                 dummySubjectID,
@@ -616,7 +723,7 @@ describe('getItemPageFields', () => {
         });
         test('should return the cmdb response', async () => {
             expect.assertions(1);
-            stubRelationshipsResponse(
+            stubRelationshipResponse(
                 { verb },
                 dummySubjectType,
                 dummySubjectID,

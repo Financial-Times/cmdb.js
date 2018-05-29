@@ -1,0 +1,11 @@
+{
+    "id": 955,
+    "subjectID": "dewey",
+    "objectID": "ashleydesouza",
+    "objectType_id": "contact",
+    "relationshipType_id": "productOwner",
+    "subjectType_id": "system",
+    "objectKey_id": 522,
+    "subjectKey_id": 527,
+    "lastUpdate": "2017-04-26T01:36:08.952Z"
+}

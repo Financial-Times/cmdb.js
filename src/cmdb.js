@@ -564,19 +564,37 @@ Cmdb.prototype.getItemPageFields = function getItemPageFields(
     });
 };
 
-const getRelationshipPath = ({
+const arrayToPath = array =>
+    array
+        .filter(item => !!item)
+        .map(param => encodeURIComponent(param))
+        .join('/');
+
+/**
+ * @name Cmdb#getRelationships
+ * @method
+ * @memberof Cmdb
+ * @description Returns an array of relationships from an item
+ * @param {Object} [locals] - The res.locals value from a request in express
+ * @param {string} subjectType - The source item type for the relationship
+ * @param {string} subjectID - The source item dataItemID for the relationship
+ * @param {string} [relType] - The relationship type for the relationship. Optional
+ * @param {number} [timeout=12000] - the optional timeout period in milliseconds
+ * @returns {Promise<Object>} The updated data about the item held in the CMDB
+ */
+Cmdb.prototype.getRelationships = function(
+    locals,
     subjectType = required('subjectType'),
     subjectID = required('subjectID'),
-    relType = required('relType'),
-    objectType = required('objectType'),
-    objectID = required('objectID'),
-} = {}) =>
-    [
+    relType,
+    timeout = DEFAULT_TIMEOUT
+) {
+    const path = arrayToPath([
         'relationships',
-        ...[subjectType, subjectID, relType, objectType, objectID].map(param =>
-            encodeURIComponent(param)
-        ),
-    ].join('/');
+        ...[subjectType, subjectID, relType],
+    ]);
+    return this._fetch(locals, path, undefined, 'GET', {}, { timeout });
+};
 
 /**
  * @name Cmdb#getRelationship
@@ -593,6 +611,22 @@ const getRelationshipPath = ({
  * @returns {Promise<Object>} The updated data about the item held in the CMDB
  */
 
+Cmdb.prototype.getRelationship = function(
+    locals,
+    subjectType = required('subjectType'),
+    subjectID = required('subjectID'),
+    relType = required('relType'),
+    objectType = required('objectType'),
+    objectID = required('objectID'),
+    timeout = DEFAULT_TIMEOUT
+) {
+    const path = arrayToPath([
+        'relationships',
+        ...[subjectType, subjectID, relType, objectType, objectID],
+    ]);
+    return this._fetch(locals, path, undefined, 'GET', {}, { timeout });
+};
+
 /**
  * @name Cmdb#putRelationship
  * @method
@@ -607,7 +641,21 @@ const getRelationshipPath = ({
  * @param {number} [timeout=12000] - the optional timeout period in milliseconds
  * @returns {Promise<Object>} The updated data about the item held in the CMDB
  */
-
+Cmdb.prototype.putRelationship = function(
+    locals,
+    subjectType = required('subjectType'),
+    subjectID = required('subjectID'),
+    relType = required('relType'),
+    objectType = required('objectType'),
+    objectID = required('objectID'),
+    timeout = DEFAULT_TIMEOUT
+) {
+    const path = arrayToPath([
+        'relationships',
+        ...[subjectType, subjectID, relType, objectType, objectID],
+    ]);
+    return this._fetch(locals, path, undefined, 'POST', {}, { timeout });
+};
 /**
  * @name Cmdb#deleteRelationship
  * @method
@@ -622,29 +670,20 @@ const getRelationshipPath = ({
  * @param {number} [timeout=12000] - the optional timeout period in milliseconds
  * @returns {Promise<Object>} The updated data about the item held in the CMDB
  */
-[
-    { key: 'putRelationship', method: 'POST' },
-    { key: 'getRelationship', method: 'GET' },
-    { key: 'deleteRelationship', method: 'DELETE' },
-].forEach(({ key, method }) => {
-    Cmdb.prototype[key] = function(
-        locals,
-        subjectType = required('subjectType'),
-        subjectID = required('subjectID'),
-        relType = required('relType'),
-        objectType = required('objectType'),
-        objectID = required('objectID'),
-        timeout = DEFAULT_TIMEOUT
-    ) {
-        const path = getRelationshipPath({
-            subjectType,
-            subjectID,
-            relType,
-            objectType,
-            objectID,
-        });
-        return this._fetch(locals, path, undefined, method, {}, { timeout });
-    };
-});
+Cmdb.prototype.deleteRelationship = function(
+    locals,
+    subjectType = required('subjectType'),
+    subjectID = required('subjectID'),
+    relType = required('relType'),
+    objectType = required('objectType'),
+    objectID = required('objectID'),
+    timeout = DEFAULT_TIMEOUT
+) {
+    const path = arrayToPath([
+        'relationships',
+        ...[subjectType, subjectID, relType, objectType, objectID],
+    ]);
+    return this._fetch(locals, path, undefined, 'DELETE', {}, { timeout });
+};
 
 export default Cmdb;
