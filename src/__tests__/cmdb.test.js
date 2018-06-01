@@ -444,12 +444,7 @@ describe('getAllItems', () => {
         });
         const stubPage4 = stubItemsResponse({ query: { page: 4, limit: 20 } });
 
-        const response = await createCmdb().getAllItems(
-            stubLocals,
-            undefined,
-            undefined,
-            20
-        );
+        await createCmdb().getAllItems(stubLocals, undefined, undefined, 20);
 
         expect(stubPage1.isDone()).toBeTruthy();
         expect(stubPage2.isDone()).toBeTruthy();
@@ -459,23 +454,35 @@ describe('getAllItems', () => {
 
     it('should return the paginated records as a single array', async () => {
         expect.assertions(2);
-        stubItemsResponse({
-            responseHeaders: {
-                Link: '<items?limit=20&page=2>; rel="next"',
+        stubItemsResponse(
+            {
+                responseHeaders: {
+                    Link: '<items?limit=20&page=2>; rel="next"',
+                },
+                query: {
+                    limit: 20,
+                },
             },
-            query: {
-                limit: 20,
+            undefined,
+            [200, itemsFixture.slice(0, 1)]
+        );
+        stubItemsResponse(
+            {
+                responseHeaders: {
+                    Link: '<items?limit=20&page=3>; rel="next"',
+                },
+                query: { page: 2, limit: 20 },
             },
-        }, undefined, [200, itemsFixture.slice(0, 1)]);
-        stubItemsResponse({
-            responseHeaders: {
-                Link: '<items?limit=20&page=3>; rel="next"',
+            undefined,
+            [200, itemsFixture.slice(1, 2)]
+        );
+        stubItemsResponse(
+            {
+                query: { page: 3, limit: 20 },
             },
-            query: { page: 2, limit: 20 },
-        }, undefined, [200, itemsFixture.slice(1, 2)]);
-        stubItemsResponse({
-            query: { page: 3, limit: 20 },
-        }, undefined, [200, itemsFixture.slice(2, 3)]);
+            undefined,
+            [200, itemsFixture.slice(2, 3)]
+        );
 
         const response = await createCmdb().getAllItems(
             stubLocals,
@@ -484,7 +491,7 @@ describe('getAllItems', () => {
             20
         );
 
-        expect(response.length).toEqual(3)
+        expect(response).toHaveLength(3);
         expect(response).toEqual(itemsFixture.slice(0, 3));
     });
 });
