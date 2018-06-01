@@ -266,7 +266,7 @@ Cmdb.prototype._fetchAll = function _fetchAll(
                         delete newQuery.page;
                         return this._fetchAll(
                             locals,
-                            links.next,
+                            links.next.replace(this.api, ''),
                             newQuery,
                             timeout
                         ).then(nextBody => [...body, ...nextBody]);

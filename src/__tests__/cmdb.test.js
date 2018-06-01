@@ -18,7 +18,12 @@ const defaultCorsHeaders = {
 };
 
 const createCmdb = options =>
-    new Cmdb(Object.assign({ apikey: 'dummyApiKey', verbose: true }, options));
+    new Cmdb(
+        Object.assign(
+            { api: defaultApi, apikey: 'dummyApiKey', verbose: true },
+            options
+        )
+    );
 
 const createBaseNockStubWithCors = () =>
     nock(defaultApi).defaultReplyHeaders(defaultCorsHeaders);
@@ -427,7 +432,7 @@ describe('getAllItems', () => {
         expect.assertions(4);
         const stubPage1 = stubItemsResponse({
             responseHeaders: {
-                Link: '<items?limit=20&page=2>; rel="next"',
+                Link: `<${defaultApi}items?limit=20&page=2>; rel="next"`,
             },
             query: {
                 limit: 20,
@@ -435,7 +440,7 @@ describe('getAllItems', () => {
         });
         const stubPage2 = stubItemsResponse({
             responseHeaders: {
-                Link: '<items?limit=20&page=3>; rel="next"',
+                Link: `<${defaultApi}items?limit=20&page=3>; rel="next"`,
             },
             query: { page: 2, limit: 20 },
         });
@@ -457,7 +462,7 @@ describe('getAllItems', () => {
         stubItemsResponse(
             {
                 responseHeaders: {
-                    Link: '<items?limit=20&page=2>; rel="next"',
+                    Link: `<${defaultApi}items?limit=20&page=2>; rel="next"`,
                 },
                 query: {
                     limit: 20,
@@ -469,7 +474,7 @@ describe('getAllItems', () => {
         stubItemsResponse(
             {
                 responseHeaders: {
-                    Link: '<items?limit=20&page=3>; rel="next"',
+                    Link: `<${defaultApi}items?limit=20&page=3>; rel="next"`,
                 },
                 query: { page: 2, limit: 20 },
             },
