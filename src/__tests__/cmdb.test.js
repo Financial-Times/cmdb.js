@@ -46,7 +46,7 @@ const stubItemResponse = (
 };
 
 const stubItemsResponse = (
-    { verb = 'get', responseHeaders = {}, body } = {},
+    { verb = 'get', responseHeaders = {}, body, query = true } = {},
     type,
     [statusCode, response] = [200, itemsFixture]
 ) => {
@@ -60,7 +60,7 @@ const stubItemsResponse = (
     const baseNockStub = createBaseNockStubWithCors();
     const encodedTypePath = type ? `/${encodeURIComponent(type)}` : '';
     return baseNockStub[verb](`/items${encodedTypePath}`, body)
-        .query(true)
+        .query(query)
         .reply(statusCode, JSON.stringify(response), mergedResponseHeaders);
 };
 
@@ -422,6 +422,71 @@ describe('getAllItems', () => {
             createCmdb().getAllItems(stubLocals, stubType)
         ).resolves.toMatchSnapshot();
     });
+
+    it('should traverse pagination correctly', async () => {
+        expect.assertions(4);
+        const stubPage1 = stubItemsResponse({
+            responseHeaders: {
+                Link: '<items?limit=20&page=2>; rel="next"',
+            },
+            query: {
+                limit: 20,
+            },
+        });
+        const stubPage2 = stubItemsResponse({
+            responseHeaders: {
+                Link: '<items?limit=20&page=3>; rel="next"',
+            },
+            query: { page: 2, limit: 20 },
+        });
+        const stubPage3WithNoLink = stubItemsResponse({
+            query: { page: 3, limit: 20 },
+        });
+        const stubPage4 = stubItemsResponse({ query: { page: 4, limit: 20 } });
+
+        const response = await createCmdb().getAllItems(
+            stubLocals,
+            undefined,
+            undefined,
+            20
+        );
+
+        expect(stubPage1.isDone()).toBeTruthy();
+        expect(stubPage2.isDone()).toBeTruthy();
+        expect(stubPage3WithNoLink.isDone()).toBeTruthy();
+        expect(stubPage4.isDone()).not.toBeTruthy();
+    });
+
+    it('should return the paginated records as a single array', async () => {
+        expect.assertions(2);
+        stubItemsResponse({
+            responseHeaders: {
+                Link: '<items?limit=20&page=2>; rel="next"',
+            },
+            query: {
+                limit: 20,
+            },
+        }, undefined, [200, itemsFixture.slice(0, 1)]);
+        stubItemsResponse({
+            responseHeaders: {
+                Link: '<items?limit=20&page=3>; rel="next"',
+            },
+            query: { page: 2, limit: 20 },
+        }, undefined, [200, itemsFixture.slice(1, 2)]);
+        stubItemsResponse({
+            query: { page: 3, limit: 20 },
+        }, undefined, [200, itemsFixture.slice(2, 3)]);
+
+        const response = await createCmdb().getAllItems(
+            stubLocals,
+            undefined,
+            undefined,
+            20
+        );
+
+        expect(response.length).toEqual(3)
+        expect(response).toEqual(itemsFixture.slice(0, 3));
+    });
 });
 
 describe('getAllItemFields', () => {
@@ -481,7 +546,7 @@ describe('getItemCount', () => {
             createCmdb().getItemCount(stubLocals, stubType)
         ).resolves.toEqual({
             pages: 1,
-            items: 2,
+            items: 4,
         });
     });
 });

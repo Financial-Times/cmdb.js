@@ -154,7 +154,12 @@ Cmdb.prototype._fetch = function _fetch(
     { timeout = DEFAULT_TIMEOUT, parseBody = true }
 ) {
     if (query && Object.keys(query).length > 0) {
-        path = `${path}?${querystring.stringify(query)}`;
+        const pathParts = path.split('?');
+        const existingQuery =
+            pathParts.length >= 2 ? querystring.parse(pathParts[1]) : {};
+        path = `${pathParts[0]}?${querystring.stringify(
+            Object.assign({}, query, existingQuery)
+        )}`;
     }
 
     return fetch(
@@ -256,10 +261,13 @@ Cmdb.prototype._fetchAll = function _fetchAll(
                 body => {
                     const links = parseLinkHeader(response.headers.get('link'));
                     if (links.next) {
+                        const newQuery = Object.assign({}, query);
+                        delete newQuery.limit;
+                        delete newQuery.page;
                         return this._fetchAll(
                             locals,
                             links.next,
-                            query,
+                            newQuery,
                             timeout
                         ).then(nextBody => [...body, ...nextBody]);
                     }
