@@ -164,6 +164,35 @@ describe('getItem', () => {
         expect(stubHttp.isDone()).toBeTruthy();
     });
 
+    test('should use the given fetch client', async () => {
+        expect.assertions(2);
+        const givenType = stubType;
+        const givenKey = stubKey;
+        const stubFetch = jest.fn();
+        try {
+            await createCmdb({ fetch: stubFetch }).getItem(
+                stubLocals,
+                givenType,
+                givenKey
+            );
+        } catch (error) {
+            // ignore
+        }
+        expect(stubFetch.mock.calls).toHaveLength(1);
+        expect(stubFetch.mock.calls[0]).toEqual([
+            'https://cmdb.in.ft.com/v3/items/system/dewey',
+            {
+                headers: {
+                    'FT-Forwarded-Auth': 'ad:dummyUsername',
+                    apikey: 'dummyApiKey',
+                    'x-api-key': 'dummyApiKey',
+                },
+                method: 'GET',
+                timeout: 12000,
+            },
+        ]);
+    });
+
     test('should return the cmdb response', async () => {
         expect.assertions(1);
         const givenType = stubType;

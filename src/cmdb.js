@@ -12,11 +12,13 @@ const DEFAULT_TIMEOUT = 12000;
  * @param {Object} config - An object of key/value pairs holding configuration
  * @param {string} [config.api=https://cmdb.in.ft.com/v3/] - The CMDB API endpoint to send requests to (defaults to production, change for other environments)
  * @param {string} config.apikey - The apikey to send to CMDB API
- * @param {Object} [config.logger] - A logger objet with the Winston API
+ * @param {Object} [config.fetch=isomorphic-unfetch] - A http client with the fetch API
+ * @param {Object} [config.logger] - A logger object with the Winston API
  * @param {boolean} [config.verbose=false] - Whether to enable logging
  */
 function Cmdb({
     api = 'https://cmdb.in.ft.com/v3/',
+    fetch: client = fetch,
     verbose = false,
     logger,
     apikey = required('apikey'),
@@ -26,6 +28,7 @@ function Cmdb({
     }
     this.api = api.slice(-1) !== '/' ? `${api}/` : api;
     this.apikey = apikey;
+    this.fetch = client;
     this.verbose = verbose;
     this._logger = this.verbose ? logger || console : noOpLogger();
 }
@@ -162,7 +165,7 @@ Cmdb.prototype._fetch = function _fetch(
         )}`;
     }
 
-    return fetch(
+    return this.fetch(
         `${this.api}${path}`,
         this._getFetchCredentials(locals, { method, body, timeout })
     ).then(
